@@ -18,7 +18,7 @@ export const posts = [
     replies: 16,
     reposts: 48,
     likes: 520,
-    accent: 'dark',
+    accent: 'emerald',
   },
   {
     name: 'Ayesha Khan',
@@ -40,7 +40,7 @@ export const posts = [
     replies: 18,
     reposts: 64,
     likes: 890,
-    accent: 'teal',
+    accent: 'emerald',
   },
   {
     name: 'Cricket Desk',

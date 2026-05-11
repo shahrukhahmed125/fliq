@@ -53,7 +53,7 @@ function App() {
 
   return (
     <div className="app-shell">
-      <Sidebar activeView={activeView} onNavigate={setActiveView} />
+      <Sidebar activeView={activeView} onNavigate={setActiveView} theme={theme} />
       <div className="main-column">
         {renderMainView()}
       </div>

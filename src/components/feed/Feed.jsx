@@ -1,9 +1,13 @@
 import { Sparkles } from 'lucide-react'
+import { useState } from 'react'
 import { posts } from '../../data/fliqData'
 import Composer from './Composer'
 import PostCard from './PostCard'
 
 function Feed() {
+  const [activeTab, setActiveTab] = useState(0)
+  const tabs = ['For You', 'Following', 'Trending']
+
   return (
     <main className="feed" id="top">
       <header className="feed-header">
@@ -16,8 +20,16 @@ function Feed() {
         </button>
       </header>
       <div className="feed-tabs" role="tablist" aria-label="Feed tabs">
-        {['For You', 'Following', 'Pakistan', 'Trending'].map((tab, index) => (
-          <button className={index === 0 ? 'active' : ''} type="button" role="tab" key={tab}>{tab}</button>
+        {tabs.map((tab, index) => (
+          <button 
+            className={activeTab === index ? 'active' : ''} 
+            type="button" 
+            role="tab" 
+            key={tab}
+            onClick={() => setActiveTab(index)}
+          >
+            {tab}
+          </button>
         ))}
       </div>
       <Composer />

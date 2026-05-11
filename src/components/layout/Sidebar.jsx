@@ -3,7 +3,7 @@ import { LogOut, Moon, MoreHorizontal, PenLine, Settings, UserRound } from 'luci
 import BrandLockup from '../brand/BrandLockup'
 import { navItems } from '../../data/fliqData'
 
-function Sidebar({ activeView, onNavigate }) {
+function Sidebar({ activeView, onNavigate, theme }) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const profileMenuRef = useRef(null)
 
@@ -31,7 +31,7 @@ function Sidebar({ activeView, onNavigate }) {
 
   return (
     <aside className="sidebar">
-      <BrandLockup />
+      <BrandLockup theme={theme} />
       <nav className="nav-list" aria-label="Primary navigation">
         {navItems.map(([Icon, label]) => {
           const isActive =
@@ -115,7 +115,7 @@ function Sidebar({ activeView, onNavigate }) {
           </div>
         )}
         <div className={isProfileMenuOpen ? 'sidebar-profile active' : 'sidebar-profile'}>
-          <div className="avatar avatar-dark">FK</div>
+          <div className="avatar avatar-green">FK</div>
           <div>
             <strong>Fliq Studio</strong>
             <span>@fliq</span>

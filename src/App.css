@@ -252,7 +252,7 @@
   min-height: 74px;
   padding: 0 22px;
   border-bottom: 1px solid var(--fliq-border);
-  background: rgba(248, 250, 249, 0.88);
+  background: color-mix(in srgb, var(--fliq-surface) 88%, transparent);
   backdrop-filter: blur(16px);
 }
 
@@ -281,7 +281,12 @@
   border: 1px solid var(--fliq-border);
 }
 
-.feed-tabs,
+.feed-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--fliq-border);
+}
+
 .mobile-tabs,
 .profile-tabs {
   display: grid;
@@ -446,7 +451,7 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: #e8f8f2;
+  background: var(--fliq-soft);
   color: var(--fliq-accent-strong);
   font-weight: 800;
 }
@@ -469,16 +474,17 @@
 .avatar-green,
 .avatar-emerald {
   background: rgba(16, 185, 129, 0.13);
+  color: var(--fliq-accent-strong);
 }
 
 .avatar-teal {
-  background: rgba(20, 184, 166, 0.13);
-  color: #0f766e;
+  background: rgba(20, 184, 166, 0.2);
+  color: var(--fliq-teal);
 }
 
 .avatar-mint {
-  background: #e9fbf5;
-  color: #047857;
+  background: var(--fliq-soft);
+  color: var(--fliq-accent-strong);
 }
 
 .profile-page,
@@ -998,8 +1004,8 @@
   padding: 0 12px;
   border: 1px solid var(--fliq-border);
   border-radius: 999px;
-  background: var(--fliq-ink);
-  color: #fff;
+  background: var(--fliq-accent);
+  color: white;
   font-size: 13px;
   font-weight: 800;
 }
