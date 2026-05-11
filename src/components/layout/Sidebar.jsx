@@ -3,7 +3,7 @@ import { LogOut, Moon, MoreHorizontal, PenLine, Settings, UserRound } from 'luci
 import BrandLockup from '../brand/BrandLockup'
 import { navItems } from '../../data/fliqData'
 
-function Sidebar({ activeView, onNavigate, theme }) {
+function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const profileMenuRef = useRef(null)
 
@@ -108,7 +108,15 @@ function Sidebar({ activeView, onNavigate, theme }) {
               <Moon size={17} />
               Display mode
             </button>
-            <button className="danger-menu-item" type="button" role="menuitem">
+            <button 
+              className="danger-menu-item" 
+              type="button" 
+              role="menuitem"
+              onClick={() => {
+                onSignOut()
+                setIsProfileMenuOpen(false)
+              }}
+            >
               <LogOut size={17} />
               Log out 
             </button>

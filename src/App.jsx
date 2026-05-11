@@ -7,11 +7,15 @@ import MobilePreview from './components/mobile/MobilePreview'
 import ProfilePage from './components/profile/ProfilePage'
 import AccountSettingsPage from './components/settings/AccountSettingsPage'
 import DisplayModePage from './components/settings/DisplayModePage'
+import SignInPage from './components/auth/SignInPage'
+import SignUpPage from './components/auth/SignUpPage'
 import './App.css'
 
 function App() {
   const [activeView, setActiveView] = useState('home')
   const [theme, setTheme] = useState('light')
+  const [isAuthenticated, setIsAuthenticated] = useState(false) // Default to false to test auth
+  const [authView, setAuthView] = useState('signin') // 'signin' or 'signup'
 
   useEffect(() => {
     const root = document.documentElement
@@ -23,6 +27,21 @@ function App() {
 
     root.dataset.theme = theme
   }, [theme])
+
+  const handleSignIn = () => {
+    setIsAuthenticated(true)
+    setActiveView('home')
+  }
+
+  const handleSignUp = () => {
+    setIsAuthenticated(true)
+    setActiveView('home')
+  }
+
+  const handleSignOut = () => {
+    setIsAuthenticated(false)
+    setAuthView('signin')
+  }
 
   function renderMainView() {
     if (activeView === 'profile') {
@@ -51,9 +70,30 @@ function App() {
     )
   }
 
+  // Show auth pages if not authenticated
+  if (!isAuthenticated) {
+    if (authView === 'signin') {
+      return (
+        <SignInPage 
+          onSignIn={handleSignIn}
+          onNavigateToSignUp={() => setAuthView('signup')}
+        />
+      )
+    }
+    
+    if (authView === 'signup') {
+      return (
+        <SignUpPage 
+          onSignUp={handleSignUp}
+          onNavigateToSignIn={() => setAuthView('signin')}
+        />
+      )
+    }
+  }
+
   return (
     <div className="app-shell">
-      <Sidebar activeView={activeView} onNavigate={setActiveView} theme={theme} />
+      <Sidebar activeView={activeView} onNavigate={setActiveView} theme={theme} onSignOut={handleSignOut} />
       <div className="main-column">
         {renderMainView()}
       </div>
