@@ -92,7 +92,7 @@ function SignUpPage({ onSignUp, onNavigateToSignIn, theme }) {
           <BackgroundPattern />
           <div className="auth-content">
             <div className="auth-branding">
-              <BrandLockup theme="light" />
+              <BrandLockup theme={theme} />
               <h1>Join Fliq today</h1>
               <p>Create your account to share your thoughts, connect with people, and discover what's happening.</p>
             </div>

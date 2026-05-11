@@ -68,7 +68,7 @@ function ForgotPasswordPage({ onBackToSignIn, theme }) {
           <BackgroundPattern />
           <div className="auth-content">
             <div className="auth-branding">
-              <BrandLockup theme="light" />
+              <BrandLockup theme={theme} />
               <h1>Reset your password</h1>
               <p>Enter your email address and we'll send you a link to reset your password.</p>
             </div>
