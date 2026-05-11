@@ -2,6 +2,7 @@ import { useState } from 'react'
 import BrandLockup from '../brand/BrandLockup'
 import GoogleIcon from '../icons/GoogleIcon'
 import AppleIcon from '../icons/AppleIcon'
+import BackgroundPattern from './BackgroundPattern'
 
 function SignUpPage({ onSignUp, onNavigateToSignIn }) {
   const [formData, setFormData] = useState({
@@ -88,10 +89,13 @@ function SignUpPage({ onSignUp, onNavigateToSignIn }) {
     <div className="auth-page">
       <div className="auth-split">
         <div className="auth-left">
-          <div className="auth-branding">
-            <BrandLockup theme="light" />
-            <h1>Join Fliq today</h1>
-            <p>Create your account to share your thoughts, connect with people, and discover what's happening.</p>
+          <BackgroundPattern />
+          <div className="auth-content">
+            <div className="auth-branding">
+              <BrandLockup theme="light" />
+              <h1>Join Fliq today</h1>
+              <p>Create your account to share your thoughts, connect with people, and discover what's happening.</p>
+            </div>
           </div>
         </div>
         
