@@ -4,7 +4,7 @@ import GoogleIcon from '../icons/GoogleIcon'
 import AppleIcon from '../icons/AppleIcon'
 import BackgroundPattern from './BackgroundPattern'
 
-function SignInPage({ onSignIn, onNavigateToSignUp, theme }) {
+function SignInPage({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword, theme }) {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -110,7 +110,7 @@ function SignInPage({ onSignIn, onNavigateToSignUp, theme }) {
             </form>
             
             <div className="auth-options">
-              <button type="button" className="link-button">
+              <button type="button" className="link-button" onClick={onNavigateToForgotPassword}>
                 Forgot password?
               </button>
             </div>

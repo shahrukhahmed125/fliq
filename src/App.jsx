@@ -9,13 +9,14 @@ import AccountSettingsPage from './components/settings/AccountSettingsPage'
 import DisplayModePage from './components/settings/DisplayModePage'
 import SignInPage from './components/auth/SignInPage'
 import SignUpPage from './components/auth/SignUpPage'
+import ForgotPasswordPage from './components/auth/ForgotPasswordPage'
 import './App.css'
 
 function App() {
   const [activeView, setActiveView] = useState('home')
   const [theme, setTheme] = useState('light')
   const [isAuthenticated, setIsAuthenticated] = useState(false) // Default to false to test auth
-  const [authView, setAuthView] = useState('signin') // 'signin' or 'signup'
+  const [authView, setAuthView] = useState('signin') // 'signin', 'signup', or 'forgot'
 
   useEffect(() => {
     const root = document.documentElement
@@ -77,6 +78,7 @@ function App() {
         <SignInPage 
           onSignIn={handleSignIn}
           onNavigateToSignUp={() => setAuthView('signup')}
+          onNavigateToForgotPassword={() => setAuthView('forgot')}
           theme={theme}
         />
       )
@@ -87,6 +89,15 @@ function App() {
         <SignUpPage 
           onSignUp={handleSignUp}
           onNavigateToSignIn={() => setAuthView('signin')}
+          theme={theme}
+        />
+      )
+    }
+    
+    if (authView === 'forgot') {
+      return (
+        <ForgotPasswordPage 
+          onBackToSignIn={() => setAuthView('signin')}
           theme={theme}
         />
       )
