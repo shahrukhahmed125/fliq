@@ -2,10 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { LogOut, Moon, MoreHorizontal, PenLine, Settings, UserRound } from 'lucide-react'
 import BrandLockup from '../brand/BrandLockup'
 import { navItems } from '../../data/fliqData'
+import axios from 'axios'
 
 function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const profileMenuRef = useRef(null)
+  const API_URL = 'http://127.0.0.1:8080/api/logout'
 
   useEffect(() => {
     function handlePointerDown(event) {
@@ -28,6 +31,39 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [])
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true)
+      
+      // Get token from localStorage
+      const token = localStorage.getItem('token')
+      
+      // Make API call to logout
+      await axios.post(API_URL, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
+      // Clear localStorage
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      
+      // Call the parent onSignOut function
+      onSignOut()
+      
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Even if API call fails, clear local storage and sign out
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      onSignOut()
+    } finally {
+      setIsLoggingOut(false)
+      setIsProfileMenuOpen(false)
+    }
+  }
 
   return (
     <aside className="sidebar">
@@ -112,13 +148,11 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
               className="danger-menu-item" 
               type="button" 
               role="menuitem"
-              onClick={() => {
-                onSignOut()
-                setIsProfileMenuOpen(false)
-              }}
+              onClick={handleLogout}
+              disabled={isLoggingOut}
             >
               <LogOut size={17} />
-              Log out 
+              {isLoggingOut ? 'Logging out...' : 'Log out'}
             </button>
           </div>
         )}

@@ -3,6 +3,7 @@ import BrandLockup from '../brand/BrandLockup'
 import GoogleIcon from '../icons/GoogleIcon'
 import AppleIcon from '../icons/AppleIcon'
 import BackgroundPattern from './BackgroundPattern'
+import axios from 'axios'
 
 function SignInPage({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword, theme }) {
   const [formData, setFormData] = useState({
@@ -10,22 +11,66 @@ function SignInPage({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword, 
     password: ''
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState({})
+  const API_URL = 'http://127.0.0.1:8080/api/login'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
-    
-    setTimeout(() => {
-      setIsLoading(false)
+    setErrors({})
+
+    try {
+      const response = await axios.post(API_URL, formData)
+      
+      // Store token and user data in localStorage
+      localStorage.setItem('token', response.data.token)
+      localStorage.setItem('user', JSON.stringify(response.data.user))
+      
+      // Reset form
+      setFormData({
+        email: '',
+        password: ''
+      })
+      
+      // Call parent onSignIn function
       onSignIn()
-    }, 1000)
+      
+    } catch (error) {
+      // Handle Laravel validation errors
+      if (error.response?.status === 422) {
+        const validationErrors = error.response.data.errors
+        let formattedErrors = {}
+        
+        Object.keys(validationErrors).forEach((key) => {
+          formattedErrors[key] = validationErrors[key][0]
+        })
+        
+        setErrors(formattedErrors)
+      } else {
+        // Handle other errors (invalid credentials, server errors, etc.)
+        alert(
+          error.response?.data?.message || 'Invalid credentials. Please try again.'
+        )
+      }
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleChange = (e) => {
+    const { name, value } = e.target
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     })
+    
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ''
+      })
+    }
   }
 
   const handleSocialSignIn = (provider) => {
@@ -87,6 +132,7 @@ function SignInPage({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword, 
                   onChange={handleChange}
                   required
                 />
+                {errors.email && <span className="error-message">{errors.email}</span>}
               </div>
               
               <div className="form-group">
@@ -98,6 +144,7 @@ function SignInPage({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword, 
                   onChange={handleChange}
                   required
                 />
+                {errors.password && <span className="error-message">{errors.password}</span>}
               </div>
               
               <button 
