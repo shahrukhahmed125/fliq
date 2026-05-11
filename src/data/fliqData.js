@@ -57,9 +57,9 @@ export const posts = [
 
 export const trends = [
   ['Cricket', '92.4K posts'],
-  ['Lahore rain', '18.8K posts'],
-  ['Creators Pakistan', '12.1K posts'],
-  ['Tech jobs', '8.6K posts'],
+  ['Tech Trends', '18.8K posts'],
+  ['Design', '12.1K posts'],
+  ['Development', '8.6K posts'],
 ]
 
 export const creators = [
@@ -79,9 +79,8 @@ export const profileHighlights = [
 export const navItems = [
   [Home, 'Home', true],
   [Compass, 'Explore'],
-  [Users, 'Communities'],
-  [MessageCircle, 'Messages'],
   [Bell, 'Notifications'],
+  [MessageCircle, 'Messages'],
   [Bookmark, 'Bookmarks'],
   [Settings, 'Settings'],
 ]

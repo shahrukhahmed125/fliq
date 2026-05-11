@@ -6,14 +6,13 @@ import PostCard from './PostCard'
 
 function Feed() {
   const [activeTab, setActiveTab] = useState(0)
-  const tabs = ['For You', 'Following', 'Trending']
+  const tabs = ['For You', 'Trending']
 
   return (
     <main className="feed" id="top">
       <header className="feed-header">
         <div>
           <h1>Home</h1>
-          <span>Live public square</span>
         </div>
         <button className="icon-button" type="button" aria-label="Feed settings">
           <Sparkles size={20} />

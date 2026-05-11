@@ -10,7 +10,6 @@ function PostCard({ post }) {
             <strong>{post.name}</strong>
             <span>{post.handle} - {post.time}</span>
           </div>
-          <span className="city-pill">{post.city}</span>
         </header>
         <p>{post.text}</p>
         <div className="post-actions" aria-label="Post actions">
