@@ -77,6 +77,7 @@ function App() {
         <SignInPage 
           onSignIn={handleSignIn}
           onNavigateToSignUp={() => setAuthView('signup')}
+          theme={theme}
         />
       )
     }
@@ -86,6 +87,7 @@ function App() {
         <SignUpPage 
           onSignUp={handleSignUp}
           onNavigateToSignIn={() => setAuthView('signin')}
+          theme={theme}
         />
       )
     }

@@ -4,7 +4,7 @@ import GoogleIcon from '../icons/GoogleIcon'
 import AppleIcon from '../icons/AppleIcon'
 import BackgroundPattern from './BackgroundPattern'
 
-function SignInPage({ onSignIn, onNavigateToSignUp }) {
+function SignInPage({ onSignIn, onNavigateToSignUp, theme }) {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -43,7 +43,7 @@ function SignInPage({ onSignIn, onNavigateToSignUp }) {
           <BackgroundPattern />
           <div className="auth-content">
             <div className="auth-branding">
-              <BrandLockup theme="light" />
+              <BrandLockup theme={theme} />
               <h1>See what's happening</h1>
               <p>Join Fliq today to share your thoughts and connect with others.</p>
             </div>

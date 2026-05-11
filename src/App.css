@@ -1287,6 +1287,12 @@
   overflow: hidden;
 }
 
+/* Dark mode support */
+[data-theme="dark"] .auth-left {
+  background: #101312;
+  color: #F8FAF9;
+}
+
 .auth-content {
   position: relative;
   z-index: 1;
@@ -1517,6 +1523,79 @@
   border: 2px solid rgba(248, 250, 249, 0.1);
 }
 
+/* Dark mode pattern colors */
+[data-theme="dark"] .circle-1 {
+  background: rgba(16, 185, 129, 0.4);
+  border-color: rgba(17, 24, 39, 0.3);
+}
+
+[data-theme="dark"] .circle-2 {
+  background: rgba(20, 184, 166, 0.35);
+  border-color: rgba(107, 114, 128, 0.25);
+}
+
+[data-theme="dark"] .circle-3 {
+  background: rgba(17, 24, 39, 0.25);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+[data-theme="dark"] .circle-4 {
+  background: rgba(107, 114, 128, 0.3);
+  border-color: rgba(248, 250, 249, 0.2);
+}
+
+[data-theme="dark"] .circle-5 {
+  background: rgba(17, 24, 39, 0.25);
+  border-color: rgba(107, 114, 128, 0.15);
+}
+
+[data-theme="dark"] .circle-6 {
+  background: rgba(248, 250, 249, 0.3);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .square-1 {
+  background: rgba(16, 185, 129, 0.3);
+  border-color: rgba(17, 24, 39, 0.25);
+}
+
+[data-theme="dark"] .square-2 {
+  background: rgba(20, 184, 166, 0.4);
+  border-color: rgba(248, 250, 249, 0.3);
+}
+
+[data-theme="dark"] .square-3 {
+  background: rgba(107, 114, 128, 0.25);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+[data-theme="dark"] .square-4 {
+  background: rgba(17, 24, 39, 0.3);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+[data-theme="dark"] .triangle-1 {
+  border-bottom-color: rgba(17, 24, 39, 0.3);
+}
+
+[data-theme="dark"] .triangle-2 {
+  border-bottom-color: rgba(248, 250, 249, 0.3);
+}
+
+[data-theme="dark"] .triangle-3 {
+  border-bottom-color: rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .wave-1 {
+  background: radial-gradient(circle, rgba(17, 24, 39, 0.15) 0%, transparent 70%);
+  border-color: rgba(248, 250, 249, 0.25);
+}
+
+[data-theme="dark"] .wave-2 {
+  background: radial-gradient(circle, rgba(107, 114, 128, 0.12) 0%, transparent 60%);
+  border-color: rgba(17, 24, 39, 0.2);
+}
+
 .auth-right {
   display: grid;
   place-items: center;
@@ -1554,6 +1633,15 @@
   font-size: 20px;
   line-height: 1.4;
   color: rgba(17, 24, 39, 0.8);
+}
+
+/* Dark mode text colors */
+[data-theme="dark"] .auth-branding h1 {
+  color: #F8FAF9;
+}
+
+[data-theme="dark"] .auth-branding p {
+  color: rgba(248, 250, 249, 0.8);
 }
 
 .auth-form-container {

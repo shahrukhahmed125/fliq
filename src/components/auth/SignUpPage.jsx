@@ -4,7 +4,7 @@ import GoogleIcon from '../icons/GoogleIcon'
 import AppleIcon from '../icons/AppleIcon'
 import BackgroundPattern from './BackgroundPattern'
 
-function SignUpPage({ onSignUp, onNavigateToSignIn }) {
+function SignUpPage({ onSignUp, onNavigateToSignIn, theme }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
