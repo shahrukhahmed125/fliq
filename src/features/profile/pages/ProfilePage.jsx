@@ -1,14 +1,15 @@
 import { ArrowLeft, CalendarDays, Link as LinkIcon, MapPin, MoreHorizontal, ShieldCheck } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { profileHighlights, profilePosts } from '../../data/fliqData'
-import PostCard from '../feed/PostCard'
+import { profileHighlights, profilePosts } from '@/data/fliqData'
+import PostCard from '@/features/feed/components/PostCard'
+import { ROUTES } from '@/lib/constants'
 
 function ProfilePage() {
   const navigate = useNavigate()
   return (
     <main className="profile-page" id="profile">
       <header className="profile-topbar">
-        <button className="back-button" type="button" aria-label="Back to home" onClick={() => navigate('/feed')}>
+        <button className="back-button" type="button" aria-label="Back to home" onClick={() => navigate(ROUTES.HOME)}>
           <ArrowLeft size={20} />
         </button>
         <div>

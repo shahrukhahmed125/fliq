@@ -1,4 +1,5 @@
 import { Heart, MessageCircle, Repeat2, Send } from 'lucide-react'
+import { posts } from '@/data/fliqData'
 
 function PostCard({ post }) {
   return (

@@ -166,7 +166,7 @@ function ForgotPasswordPage({ theme }) {
                 <button 
                   type="button" 
                   className="link-button"
-                  onClick={() => navigate('/signin')}
+                  onClick={() => navigate(ROUTES.SIGN_IN)}
                 >
                   ← Back to sign in
                 </button>

@@ -10,7 +10,8 @@ import {
   UserRound,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import SettingsTopbar from './SettingsTopbar'
+import SettingsTopbar from '@/features/settings/components/SettingsTopbar'
+import { ROUTES } from '@/lib/constants'
 
 const accountSections = [
   {
@@ -41,7 +42,7 @@ const accountSections = [
 function AccountSettingsPage() {
   const navigate = useNavigate()
   return (
-    <main className="settings-page" id="account-settings">
+    <main className="settings-page" id="account-settings">ROUTES.HOME
       <SettingsTopbar eyebrow="Privacy, login, and preferences" onBack={() => navigate('/feed')} title="Account settings" />
 
       <section className="settings-hero">

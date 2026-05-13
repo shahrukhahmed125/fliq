@@ -1,10 +1,10 @@
 import { Sparkles } from 'lucide-react'
 import { useState } from 'react'
-import { posts } from '../../data/fliqData'
-import Composer from './Composer'
-import PostCard from './PostCard'
+import { posts } from '@/data/fliqData'
+import Composer from '@/features/feed/components/Composer'
+import PostCard from '@/features/feed/components/PostCard'
 
-function Feed() {
+function FeedPage() {
   const [activeTab, setActiveTab] = useState(0)
   const tabs = ['For You', 'Trending']
 
@@ -42,4 +42,4 @@ function Feed() {
   )
 }
 
-export default Feed
+export default FeedPage

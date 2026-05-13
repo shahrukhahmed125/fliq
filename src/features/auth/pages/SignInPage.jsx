@@ -1,95 +1,67 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import BrandLockup from '../brand/BrandLockup'
-import GoogleIcon from '../icons/GoogleIcon'
-import AppleIcon from '../icons/AppleIcon'
-import BackgroundPattern from './BackgroundPattern'
-import axios from 'axios'
 import { TextField } from '@mui/material'
-import Spinner from '../ui/Spinner'
+import BrandLockup from '@/components/brand/BrandLockup'
+import GoogleIcon from '@/components/icons/GoogleIcon'
+import AppleIcon from '@/components/icons/AppleIcon'
+import BackgroundPattern from '@/features/auth/components/BackgroundPattern'
+import Spinner from '@/components/ui/Spinner'
+import { authService } from '@/services/authService'
+import { storageService } from '@/services/storageService'
+import { ROUTES } from '@/lib/constants'
 
-function SignUpPage({ theme }) {
+function SignInPage({ theme }) {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: ''
   })
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
   const [generalError, setGeneralError] = useState('')
-  const API_URL = 'http://127.0.0.1:8080/api/register';
-
-  const validateForm = () => {
-    const newErrors = {}
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required'
-    }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid'
-    }
-    
-    if (!formData.password) {
-      newErrors.password = 'Password is required'
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters'
-    }
-    
-    return newErrors
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setIsLoading(true)
+    setErrors({})
     setGeneralError('')
 
-    if(Object.keys(validateForm()).length > 0) {
-      setErrors(validateForm())
-      return
-    }
-
-    try{
-      setIsLoading(true)
-      const response = await axios.post(API_URL, formData);
-      localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
-
+    try {
+      const response = await authService.login(formData)
+      
+      // Store token and user data using storageService
+      storageService.setToken(response.token)
+      storageService.setUser(response.user)
+      
+      // Reset form
       setFormData({
-        name: '',
         email: '',
-        password: '',
-      });
+        password: ''
+      })
+      
+      navigate(ROUTES.HOME)
+      
     } catch (error) {
-      // Laravel validation errors
+      // Handle Laravel validation errors
       if (error.response?.status === 422) {
-
-        const validationErrors = error.response.data.errors;
-
-        let formattedErrors = {};
-
+        const validationErrors = error.response.data.errors
+        let formattedErrors = {}
+        
         Object.keys(validationErrors).forEach((key) => {
-          formattedErrors[key] = validationErrors[key][0];
-        });
-
-        setErrors(formattedErrors);
-
+          formattedErrors[key] = validationErrors[key][0]
+        })
+        
+        setErrors(formattedErrors)
       } else {
-
+        // Handle other errors (invalid credentials, server errors, etc.)
         setGeneralError(
-          error.response?.data?.message || 'Unable to create account. Please try again later.'
-        );
+          error.response?.data?.message || 'Unable to sign in. Please check your credentials and try again.'
+        )
       }
-
     } finally {
-
-      setIsLoading(false);
-      onSignUp();
-
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -98,6 +70,7 @@ function SignUpPage({ theme }) {
       [name]: value
     })
     
+    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -106,7 +79,7 @@ function SignUpPage({ theme }) {
     }
   }
 
-  const handleSocialSignUp = (provider) => {
+  const handleSocialSignIn = (provider) => {
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
@@ -122,8 +95,8 @@ function SignUpPage({ theme }) {
           <div className="auth-content">
             <div className="auth-branding">
               <BrandLockup theme={theme} />
-              <h1>Join Fliq today</h1>
-              <p>Create your account to share your thoughts, connect with people, and discover what's happening.</p>
+              <h1>See what's happening</h1>
+              <p>Join Fliq today to share your thoughts and connect with others.</p>
             </div>
           </div>
         </div>
@@ -134,7 +107,7 @@ function SignUpPage({ theme }) {
               <button 
                 type="button" 
                 className="social-button google"
-                onClick={() => handleSocialSignUp('google')}
+                onClick={() => handleSocialSignIn('google')}
                 disabled={isLoading}
               >
                 <GoogleIcon size={20} />
@@ -143,7 +116,7 @@ function SignUpPage({ theme }) {
               <button 
                 type="button" 
                 className="social-button apple"
-                onClick={() => handleSocialSignUp('apple')}
+                onClick={() => handleSocialSignIn('apple')}
                 disabled={isLoading}
               >
                 <AppleIcon size={20} />
@@ -162,48 +135,6 @@ function SignUpPage({ theme }) {
             )}
             
             <form className="auth-form" onSubmit={handleSubmit}>
-              <div className="form-group">
-                <TextField
-                  name="name"
-                  type="text"
-                  label="Name"
-                  variant="outlined"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  fullWidth
-                  error={!!errors.name}
-                  helperText={errors.name}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      height: '56px',
-                      borderRadius: '28px',
-                      backgroundColor: 'var(--fliq-surface)',
-                      '& fieldset': {
-                        borderColor: 'var(--fliq-border)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'var(--fliq-border)',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'var(--fliq-accent)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: 'var(--fliq-muted)',
-                      '&.Mui-focused': {
-                        color: 'var(--fliq-accent)',
-                      },
-                    },
-                    '& .MuiInputBase-input': {
-                      color: 'var(--fliq-ink)',
-                      fontSize: '16px',
-                      fontWeight: 500,
-                    },
-                  }}
-                />
-              </div>
-              
               <div className="form-group">
                 <TextField
                   name="email"
@@ -296,27 +227,29 @@ function SignUpPage({ theme }) {
                 {isLoading ? (
                   <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <Spinner size={20} color="white" />
-                    Creating account...
+                    Signing in...
                   </span>
                 ) : (
-                  'Create account'
+                  'Sign in'
                 )}
               </button>
-              
-              <p className="auth-terms">
-                By signing up, you agree to the <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy Policy</a>.
-              </p>
             </form>
+            
+            <div className="auth-options">
+              <button type="button" className="link-button" onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}>
+                Forgot password?
+              </button>
+            </div>
             
             <div className="auth-switch">
               <p>
-                Already have an account?{' '}
+                Don't have an account?{' '}
                 <button 
                   type="button" 
                   className="link-button"
-                  onClick={() => navigate('/signin')}
+                  onClick={() => navigate(ROUTES.SIGN_UP)}
                 >
-                  Sign in
+                  Sign up
                 </button>
               </p>
             </div>
@@ -327,4 +260,4 @@ function SignUpPage({ theme }) {
   )
 }
 
-export default SignUpPage
+export default SignInPage
