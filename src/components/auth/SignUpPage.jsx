@@ -4,6 +4,7 @@ import GoogleIcon from '../icons/GoogleIcon'
 import AppleIcon from '../icons/AppleIcon'
 import BackgroundPattern from './BackgroundPattern'
 import axios from 'axios'
+import { TextField } from '@mui/material'
 
 function SignUpPage({ onSignUp, onNavigateToSignIn, theme }) {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ function SignUpPage({ onSignUp, onNavigateToSignIn, theme }) {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
+  const [generalError, setGeneralError] = useState('')
   const API_URL = 'http://127.0.0.1:8080/api/register';
 
   const validateForm = () => {
@@ -39,6 +41,7 @@ function SignUpPage({ onSignUp, onNavigateToSignIn, theme }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setGeneralError('')
 
     if(Object.keys(validateForm()).length > 0) {
       setErrors(validateForm())
@@ -72,8 +75,8 @@ function SignUpPage({ onSignUp, onNavigateToSignIn, theme }) {
 
       } else {
 
-        alert(
-          error.response?.data?.message || 'Something went wrong'
+        setGeneralError(
+          error.response?.data?.message || 'Unable to create account. Please try again later.'
         );
       }
 
@@ -149,41 +152,137 @@ function SignUpPage({ onSignUp, onNavigateToSignIn, theme }) {
               <span>or</span>
             </div>
             
+            {generalError && (
+              <div className="auth-general-error">
+                {generalError}
+              </div>
+            )}
+            
             <form className="auth-form" onSubmit={handleSubmit}>
               <div className="form-group">
-                <input
+                <TextField
                   name="name"
                   type="text"
-                  placeholder="Name"
+                  label="Name"
+                  variant="outlined"
                   value={formData.name}
                   onChange={handleChange}
                   required
+                  fullWidth
+                  error={!!errors.name}
+                  helperText={errors.name}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      height: '56px',
+                      borderRadius: '28px',
+                      backgroundColor: 'var(--fliq-surface)',
+                      '& fieldset': {
+                        borderColor: 'var(--fliq-border)',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'var(--fliq-border)',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'var(--fliq-accent)',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'var(--fliq-muted)',
+                      '&.Mui-focused': {
+                        color: 'var(--fliq-accent)',
+                      },
+                    },
+                    '& .MuiInputBase-input': {
+                      color: 'var(--fliq-ink)',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                    },
+                  }}
                 />
-                {errors.name && <span className="error-message">{errors.name}</span>}
               </div>
               
               <div className="form-group">
-                <input
+                <TextField
                   name="email"
                   type="email"
-                  placeholder="Email"
+                  label="Email"
+                  variant="outlined"
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  fullWidth
+                  error={!!errors.email}
+                  helperText={errors.email}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      height: '56px',
+                      borderRadius: '28px',
+                      backgroundColor: 'var(--fliq-surface)',
+                      '& fieldset': {
+                        borderColor: 'var(--fliq-border)',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'var(--fliq-border)',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'var(--fliq-accent)',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'var(--fliq-muted)',
+                      '&.Mui-focused': {
+                        color: 'var(--fliq-accent)',
+                      },
+                    },
+                    '& .MuiInputBase-input': {
+                      color: 'var(--fliq-ink)',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                    },
+                  }}
                 />
-                {errors.email && <span className="error-message">{errors.email}</span>}
               </div>
               
               <div className="form-group">
-                <input
+                <TextField
                   name="password"
                   type="password"
-                  placeholder="Password"
+                  label="Password"
+                  variant="outlined"
                   value={formData.password}
                   onChange={handleChange}
                   required
+                  fullWidth
+                  error={!!errors.password}
+                  helperText={errors.password}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      height: '56px',
+                      borderRadius: '28px',
+                      backgroundColor: 'var(--fliq-surface)',
+                      '& fieldset': {
+                        borderColor: 'var(--fliq-border)',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'var(--fliq-border)',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'var(--fliq-accent)',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'var(--fliq-muted)',
+                      '&.Mui-focused': {
+                        color: 'var(--fliq-accent)',
+                      },
+                    },
+                    '& .MuiInputBase-input': {
+                      color: 'var(--fliq-ink)',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                    },
+                  }}
                 />
-                {errors.password && <span className="error-message">{errors.password}</span>}
               </div>
               
               <button 

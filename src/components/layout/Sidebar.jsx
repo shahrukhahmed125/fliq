@@ -91,7 +91,7 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
               }
             }}
           >
-            <Icon size={21} strokeWidth={2.1} />
+            <Icon size={21} strokeWidth={1.7} />
             <span>{label}</span>
           </a>
           )
