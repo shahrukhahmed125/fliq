@@ -11,6 +11,8 @@ import DisplayModePage from './components/settings/DisplayModePage'
 import SignInPage from './components/auth/SignInPage'
 import SignUpPage from './components/auth/SignUpPage'
 import ForgotPasswordPage from './components/auth/ForgotPasswordPage'
+import PublicRoute from './components/auth/PublicRoute'
+import PrivateRoute from './components/auth/PrivateRoute'
 import ScreenLoader from './components/ui/ScreenLoader'
 import './App.css'
 
@@ -48,7 +50,7 @@ function AppContent() {
               <Route path="/feed" element={<><Feed /><ExploreStrip /></>} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings/account" element={<AccountSettingsPage />} />
-              <Route path="/settings/display" element={<DisplayModePage onThemeChange={setTheme} theme={theme} />} />
+              <Route path="/settings/display" element={<DisplayModePage theme={theme} onThemeChange={setTheme} />} />
               <Route path="/" element={<Navigate to="/feed" replace />} />
             </Routes>
           </div>
@@ -64,10 +66,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/signin" element={<SignInPage theme="light" />} />
-        <Route path="/signup" element={<SignUpPage theme="light" />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage theme="light" />} />
-        <Route path="/*" element={<AppContent />} />
+        <Route path="/signin" element={<PublicRoute><SignInPage theme="light" /></PublicRoute>} />
+        <Route path="/signup" element={<PublicRoute><SignUpPage theme="light" /></PublicRoute>} />
+        <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage theme="light" /></PublicRoute>} />
+        <Route path="/*" element={<PrivateRoute><AppContent /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   )
