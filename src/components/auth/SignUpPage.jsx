@@ -1,12 +1,15 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import BrandLockup from '../brand/BrandLockup'
 import GoogleIcon from '../icons/GoogleIcon'
 import AppleIcon from '../icons/AppleIcon'
 import BackgroundPattern from './BackgroundPattern'
 import axios from 'axios'
 import { TextField } from '@mui/material'
+import Spinner from '../ui/Spinner'
 
-function SignUpPage({ onSignUp, onNavigateToSignIn, theme }) {
+function SignUpPage({ theme }) {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -107,7 +110,7 @@ function SignUpPage({ onSignUp, onNavigateToSignIn, theme }) {
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
-      onSignUp()
+      navigate('/feed')
     }, 1000)
   }
 
@@ -290,7 +293,14 @@ function SignUpPage({ onSignUp, onNavigateToSignIn, theme }) {
                 className="auth-submit-button"
                 disabled={isLoading}
               >
-                {isLoading ? 'Creating account...' : 'Create account'}
+                {isLoading ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Spinner size={20} color="white" />
+                    Creating account...
+                  </span>
+                ) : (
+                  'Create account'
+                )}
               </button>
               
               <p className="auth-terms">
@@ -304,7 +314,7 @@ function SignUpPage({ onSignUp, onNavigateToSignIn, theme }) {
                 <button 
                   type="button" 
                   className="link-button"
-                  onClick={onNavigateToSignIn}
+                  onClick={() => navigate('/signin')}
                 >
                   Sign in
                 </button>

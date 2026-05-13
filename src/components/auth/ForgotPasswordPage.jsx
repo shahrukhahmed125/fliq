@@ -1,8 +1,12 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import BrandLockup from '../brand/BrandLockup'
 import BackgroundPattern from './BackgroundPattern'
+import { TextField } from '@mui/material'
+import Spinner from '../ui/Spinner'
 
-function ForgotPasswordPage({ onBackToSignIn, theme }) {
+function ForgotPasswordPage({ theme }) {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: ''
   })
@@ -81,16 +85,46 @@ function ForgotPasswordPage({ onBackToSignIn, theme }) {
               <>
                 <form className="auth-form" onSubmit={handleSubmit}>
                   <div className="form-group">
-                    <input
+                    <TextField
                       name="email"
                       type="email"
-                      placeholder="Enter your email"
+                      label="Enter your email"
+                      variant="outlined"
                       value={formData.email}
                       onChange={handleChange}
                       required
+                      fullWidth
                       disabled={isLoading}
+                      error={!!errors.email}
+                      helperText={errors.email}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          height: '56px',
+                          borderRadius: '28px',
+                          backgroundColor: 'var(--fliq-surface)',
+                          '& fieldset': {
+                            borderColor: 'var(--fliq-border)',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: 'var(--fliq-border)',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: 'var(--fliq-accent)',
+                          },
+                        },
+                        '& .MuiInputLabel-root': {
+                          color: 'var(--fliq-muted)',
+                          '&.Mui-focused': {
+                            color: 'var(--fliq-accent)',
+                          },
+                        },
+                        '& .MuiInputBase-input': {
+                          color: 'var(--fliq-ink)',
+                          fontSize: '16px',
+                          fontWeight: 500,
+                        },
+                      }}
                     />
-                    {errors.email && <span className="error-message">{errors.email}</span>}
                   </div>
                   
                   <button 
@@ -98,7 +132,14 @@ function ForgotPasswordPage({ onBackToSignIn, theme }) {
                     className="auth-submit-button"
                     disabled={isLoading}
                   >
-                    {isLoading ? 'Sending reset link...' : 'Send reset link'}
+                    {isLoading ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <Spinner size={20} color="white" />
+                        Sending reset link...
+                      </span>
+                    ) : (
+                      'Send reset link'
+                    )}
                   </button>
                 </form>
               </>
@@ -125,7 +166,7 @@ function ForgotPasswordPage({ onBackToSignIn, theme }) {
                 <button 
                   type="button" 
                   className="link-button"
-                  onClick={onBackToSignIn}
+                  onClick={() => navigate('/signin')}
                 >
                   ← Back to sign in
                 </button>

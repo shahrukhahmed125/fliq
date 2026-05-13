@@ -1965,3 +1965,30 @@
     font-size: 24px;
   }
 }
+
+/* Screen Loader */
+.screen-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  background: var(--fliq-bg);
+  z-index: 9999;
+}
+
+.screen-loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.screen-loader-message {
+  margin: 0;
+  color: var(--fliq-muted);
+  font-size: 16px;
+  font-weight: 500;
+}

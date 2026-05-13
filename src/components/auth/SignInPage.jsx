@@ -5,6 +5,8 @@ import AppleIcon from '../icons/AppleIcon'
 import BackgroundPattern from './BackgroundPattern'
 import axios from 'axios'
 import { TextField } from '@mui/material'
+import Spinner from '../ui/Spinner'
+import {useNavigate } from 'react-router-dom'
 
 function SignInPage({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword, theme }) {
   const [formData, setFormData] = useState({
@@ -15,6 +17,7 @@ function SignInPage({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword, 
   const [errors, setErrors] = useState({})
   const [generalError, setGeneralError] = useState('')
   const API_URL = 'http://127.0.0.1:8080/api/login'
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -35,8 +38,7 @@ function SignInPage({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword, 
         password: ''
       })
       
-      // Call parent onSignIn function
-      onSignIn()
+      navigate('/feed')
       
     } catch (error) {
       // Handle Laravel validation errors
@@ -80,7 +82,7 @@ function SignInPage({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword, 
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
-      onSignIn()
+      navigate('/feed')
     }, 1000)
   }
 
@@ -221,12 +223,19 @@ function SignInPage({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword, 
                 className="auth-submit-button"
                 disabled={isLoading}
               >
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                {isLoading ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Spinner size={20} color="white" />
+                    Signing in...
+                  </span>
+                ) : (
+                  'Sign in'
+                )}
               </button>
             </form>
             
             <div className="auth-options">
-              <button type="button" className="link-button" onClick={onNavigateToForgotPassword}>
+              <button type="button" className="link-button" onClick={() => navigate('/forgot-password')}>
                 Forgot password?
               </button>
             </div>
@@ -237,7 +246,7 @@ function SignInPage({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword, 
                 <button 
                   type="button" 
                   className="link-button"
-                  onClick={onNavigateToSignUp}
+                  onClick={() => navigate('/signup')}
                 >
                   Sign up
                 </button>

@@ -1,5 +1,6 @@
 import { Check, Moon, Smartphone, Sun } from 'lucide-react'
 import SettingsTopbar from './SettingsTopbar'
+import { useNavigate } from 'react-router-dom'
 
 const themeOptions = [
   {
@@ -22,10 +23,11 @@ const themeOptions = [
   },
 ]
 
-function DisplayModePage({ onBack, onThemeChange, theme }) {
+function DisplayModePage({ onThemeChange, theme }) {
+  const navigate = useNavigate()
   return (
     <main className="settings-page" id="display-mode">
-      <SettingsTopbar eyebrow="Theme, contrast, and reading comfort" onBack={onBack} title="Display mode" />
+      <SettingsTopbar eyebrow="Theme, contrast, and reading comfort" onBack={() => navigate('/feed')} title="Display mode" />
 
       <section className="display-hero">
         <div>

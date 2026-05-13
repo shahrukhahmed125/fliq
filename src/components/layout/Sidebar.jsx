@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { LogOut, Moon, MoreHorizontal, PenLine, Settings, UserRound } from 'lucide-react'
 import BrandLockup from '../brand/BrandLockup'
 import { navItems } from '../../data/fliqData'
 import axios from 'axios'
+import Spinner from '../ui/Spinner'
 
-function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
+function Sidebar({ theme, onSignOut }) {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const profileMenuRef = useRef(null)
@@ -52,6 +56,7 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
       
       // Call the parent onSignOut function
       onSignOut()
+      navigate('/signin')
       
     } catch (error) {
       console.error('Logout error:', error)
@@ -59,6 +64,7 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       onSignOut()
+      navigate('/signin')
     } finally {
       setIsLoggingOut(false)
       setIsProfileMenuOpen(false)
@@ -71,8 +77,8 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
       <nav className="nav-list" aria-label="Primary navigation">
         {navItems.map(([Icon, label]) => {
           const isActive =
-            (label === 'Home' && activeView === 'home') ||
-            (label === 'Settings' && activeView === 'account-settings')
+            (label === 'Home' && location.pathname === '/feed') ||
+            (label === 'Settings' && location.pathname === '/settings/account')
 
           return (
           <a
@@ -82,12 +88,12 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
             onClick={(event) => {
               if (label === 'Home') {
                 event.preventDefault()
-                onNavigate('home')
+                navigate('/feed')
               }
 
               if (label === 'Settings') {
                 event.preventDefault()
-                onNavigate('account-settings')
+                navigate('/settings/account')
               }
             }}
           >
@@ -115,7 +121,7 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
               type="button"
               role="menuitem"
               onClick={() => {
-                onNavigate('profile')
+                navigate('/profile')
                 setIsProfileMenuOpen(false)
               }}
             >
@@ -126,7 +132,7 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
               type="button"
               role="menuitem"
               onClick={() => {
-                onNavigate('account-settings')
+                navigate('/settings/account')
                 setIsProfileMenuOpen(false)
               }}
             >
@@ -137,7 +143,7 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
               type="button"
               role="menuitem"
               onClick={() => {
-                onNavigate('display-mode')
+                navigate('/settings/display')
                 setIsProfileMenuOpen(false)
               }}
             >
@@ -151,8 +157,17 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
               onClick={handleLogout}
               disabled={isLoggingOut}
             >
-              <LogOut size={17} />
-              {isLoggingOut ? 'Logging out...' : 'Log out'}
+              {isLoggingOut ? (
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Spinner size={16} color="accent" />
+                  Logging out...
+                </span>
+              ) : (
+                <>
+                  <LogOut size={17} />
+                  Log out
+                </>
+              )}
             </button>
           </div>
         )}
@@ -173,7 +188,7 @@ function Sidebar({ activeView, onNavigate, theme, onSignOut }) {
             <MoreHorizontal size={18} />
           </button>
         </div>
-        {activeView !== 'home' && <span className="profile-current-dot" aria-hidden="true" />}
+        {location.pathname !== '/feed' && <span className="profile-current-dot" aria-hidden="true" />}
       </div>
     </aside>
   )

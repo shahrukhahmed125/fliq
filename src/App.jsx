@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import ExploreStrip from './components/explore/ExploreStrip'
 import Feed from './components/feed/Feed'
 import RightPanel from './components/layout/RightPanel'
@@ -10,13 +11,13 @@ import DisplayModePage from './components/settings/DisplayModePage'
 import SignInPage from './components/auth/SignInPage'
 import SignUpPage from './components/auth/SignUpPage'
 import ForgotPasswordPage from './components/auth/ForgotPasswordPage'
+import ScreenLoader from './components/ui/ScreenLoader'
 import './App.css'
 
-function App() {
-  const [activeView, setActiveView] = useState('home')
+function AppContent() {
   const [theme, setTheme] = useState('light')
-  const [isAuthenticated, setIsAuthenticated] = useState(false) // Default to false to test auth
-  const [authView, setAuthView] = useState('signin') // 'signin', 'signup', or 'forgot'
+  const [isScreenLoading, setIsScreenLoading] = useState(false)
+  const location = useLocation()
 
   useEffect(() => {
     const root = document.documentElement
@@ -29,90 +30,46 @@ function App() {
     root.dataset.theme = theme
   }, [theme])
 
-  const handleSignIn = () => {
-    setIsAuthenticated(true)
-    setActiveView('home')
-  }
-
-  const handleSignUp = () => {
-    setIsAuthenticated(true)
-    setActiveView('home')
-  }
-
   const handleSignOut = () => {
-    setIsAuthenticated(false)
-    setAuthView('signin')
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
   }
 
-  function renderMainView() {
-    if (activeView === 'profile') {
-      return <ProfilePage onBack={() => setActiveView('home')} />
-    }
-
-    if (activeView === 'account-settings') {
-      return <AccountSettingsPage onBack={() => setActiveView('home')} />
-    }
-
-    if (activeView === 'display-mode') {
-      return (
-        <DisplayModePage
-          onBack={() => setActiveView('home')}
-          onThemeChange={setTheme}
-          theme={theme}
-        />
-      )
-    }
-
-    return (
-      <>
-        <Feed />
-        <ExploreStrip />
-      </>
-    )
-  }
-
-  // Show auth pages if not authenticated
-  if (!isAuthenticated) {
-    if (authView === 'signin') {
-      return (
-        <SignInPage 
-          onSignIn={handleSignIn}
-          onNavigateToSignUp={() => setAuthView('signup')}
-          onNavigateToForgotPassword={() => setAuthView('forgot')}
-          theme={theme}
-        />
-      )
-    }
-    
-    if (authView === 'signup') {
-      return (
-        <SignUpPage 
-          onSignUp={handleSignUp}
-          onNavigateToSignIn={() => setAuthView('signin')}
-          theme={theme}
-        />
-      )
-    }
-    
-    if (authView === 'forgot') {
-      return (
-        <ForgotPasswordPage 
-          onBackToSignIn={() => setAuthView('signin')}
-          theme={theme}
-        />
-      )
-    }
-  }
+  const isAuthRoute = ['/signin', '/signup', '/forgot-password'].includes(location.pathname)
 
   return (
-    <div className="app-shell">
-      <Sidebar activeView={activeView} onNavigate={setActiveView} theme={theme} onSignOut={handleSignOut} />
-      <div className="main-column">
-        {renderMainView()}
-      </div>
-      <RightPanel />
-      <MobilePreview />
-    </div>
+    <>
+      {isScreenLoading && <ScreenLoader message="Loading..." />}
+      {!isAuthRoute && (
+        <div className="app-shell">
+          <Sidebar theme={theme} onSignOut={handleSignOut} />
+          <div className="main-column">
+            <Routes>
+              <Route path="/feed" element={<><Feed /><ExploreStrip /></>} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/settings/account" element={<AccountSettingsPage />} />
+              <Route path="/settings/display" element={<DisplayModePage onThemeChange={setTheme} theme={theme} />} />
+              <Route path="/" element={<Navigate to="/feed" replace />} />
+            </Routes>
+          </div>
+          <RightPanel />
+          <MobilePreview />
+        </div>
+      )}
+    </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/signin" element={<SignInPage theme="light" />} />
+        <Route path="/signup" element={<SignUpPage theme="light" />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage theme="light" />} />
+        <Route path="/*" element={<AppContent />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
