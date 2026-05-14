@@ -23,7 +23,7 @@ function AppRoutes({ theme, onSignOut, onThemeChange }) {
       <Routes>
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
-          <Route element={<MainLayout onSignOut={onSignOut} />}>
+          <Route element={<MainLayout theme={theme} onSignOut={onSignOut} />}>
             <Route path={ROUTES.HOME} element={<FeedPage />} />
             <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
             <Route path={ROUTES.SETTINGS_ACCOUNT} element={<AccountSettingsPage />} />
