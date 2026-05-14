@@ -20,4 +20,9 @@ export default defineConfig({
       '@/assets': path.resolve(__dirname, './src/assets'),
     },
   },
+  server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+    },
+  },
 })

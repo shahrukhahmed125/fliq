@@ -30,4 +30,13 @@ export const authService = {
     const response = await api.get('/user')
     return response.data
   },
+
+  googleLogin: async (tokenResponse) => {
+
+    const response = await api.post('/auth/google', {
+      access_token: tokenResponse.access_token
+    })
+
+    return response.data
+  },
 }

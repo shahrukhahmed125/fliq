@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 console.log('Starting React app...')
 
@@ -12,7 +13,9 @@ console.log('Root element:', rootElement)
 createRoot(rootElement).render(
   <StrictMode>
     <ErrorBoundary>
-      <App />
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+        <App />
+      </GoogleOAuthProvider>
     </ErrorBoundary>
   </StrictMode>,
 )

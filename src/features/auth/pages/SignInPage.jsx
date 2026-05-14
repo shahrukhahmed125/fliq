@@ -9,6 +9,7 @@ import Spinner from '@/components/ui/Spinner'
 import { authService } from '@/services/authService'
 import { storageService } from '@/services/storageService'
 import { ROUTES } from '@/lib/constants'
+import { useGoogleLogin } from '@react-oauth/google'
 
 function SignInPage({ theme }) {
   const navigate = useNavigate()
@@ -63,6 +64,60 @@ function SignInPage({ theme }) {
     }
   }
 
+  const googleLogin = useGoogleLogin({
+
+    onSuccess: async (tokenResponse) => {
+
+      setIsLoading(true)
+      setErrors({})
+      setGeneralError('')
+
+      try {
+
+        const response = await authService.googleLogin(tokenResponse)
+
+        storageService.setToken(response.token)
+        storageService.setUser(response.user)
+
+        setFormData({
+          email: '',
+          password: ''
+        })
+
+        navigate(ROUTES.HOME)
+
+      } catch (error) {
+
+        if (error.response?.status === 422) {
+
+          const validationErrors = error.response.data.errors
+          let formattedErrors = {}
+
+          Object.keys(validationErrors).forEach((key) => {
+            formattedErrors[key] = validationErrors[key][0]
+          })
+
+          setErrors(formattedErrors)
+
+        } else {
+
+          setGeneralError(
+            error.response?.data?.message ||
+            'Unable to sign in. Please try again.'
+          )
+        }
+
+      } finally {
+        setIsLoading(false)
+      }
+    },
+
+    onError: () => {
+      setGeneralError('Google login failed')
+    }
+
+  })
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData({
@@ -104,15 +159,14 @@ function SignInPage({ theme }) {
         <div className="auth-right">
           <div className="auth-form-container">
             <div className="auth-social">
-              <button 
-                type="button" 
-                className="social-button google"
-                onClick={() => handleSocialSignIn('google')}
-                disabled={isLoading}
-              >
-                <GoogleIcon size={20} />
-                Continue with Google
-              </button>
+            <button
+              type="button"
+              className="social-button google"
+              onClick={() => googleLogin()}
+            >
+              <GoogleIcon size={20} />
+              Continue with Google
+            </button>
               <button 
                 type="button" 
                 className="social-button apple"
