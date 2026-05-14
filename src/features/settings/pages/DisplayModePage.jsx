@@ -27,8 +27,8 @@ const themeOptions = [
 function DisplayModePage({ onThemeChange, theme }) {
   const navigate = useNavigate()
   return (
-    <main className="settings-page" id="display-mode">ROUTES.HOME
-      <SettingsTopbar eyebrow="Theme, contrast, and reading comfort" onBack={() => navigate('/feed')} title="Display mode" />
+    <main className="settings-page" id="display-mode">
+      <SettingsTopbar eyebrow="Theme, contrast, and reading comfort" onBack={() => navigate(ROUTES.HOME)} title="Display mode" />
 
       <section className="display-hero">
         <div>

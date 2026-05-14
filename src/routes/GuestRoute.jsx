@@ -1,8 +1,18 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import { Outlet, Navigate } from 'react-router-dom'
 import { storageService } from '@/services/storageService'
 
-export default function GuestRoute() {
+function GuestRoute() {
+  console.log('GuestRoute checking authentication...')
   const isAuthenticated = storageService.isAuthenticated()
+  console.log('Is authenticated:', isAuthenticated)
 
-  return !isAuthenticated ? <Outlet /> : <Navigate to="/feed" replace />
+  if (isAuthenticated) {
+    console.log('Redirecting to /feed')
+    return <Navigate to="/feed" replace />
+  }
+
+  console.log('Rendering Outlet')
+  return <Outlet />
 }
+
+export default GuestRoute

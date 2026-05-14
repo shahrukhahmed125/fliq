@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import BrandLockup from '../brand/BrandLockup'
-import BackgroundPattern from './BackgroundPattern'
+import BrandLockup from '@/components/brand/BrandLockup'
+import BackgroundPattern from '@/features/auth/components/BackgroundPattern'
 import { TextField } from '@mui/material'
-import Spinner from '../ui/Spinner'
+import Spinner from '@/components/ui/Spinner'
+import { ROUTES } from '@/lib/constants'
 
 function ForgotPasswordPage({ theme }) {
   const navigate = useNavigate()

@@ -42,8 +42,8 @@ const accountSections = [
 function AccountSettingsPage() {
   const navigate = useNavigate()
   return (
-    <main className="settings-page" id="account-settings">ROUTES.HOME
-      <SettingsTopbar eyebrow="Privacy, login, and preferences" onBack={() => navigate('/feed')} title="Account settings" />
+    <main className="settings-page" id="account-settings">
+      <SettingsTopbar eyebrow="Privacy, login, and preferences" onBack={() => navigate(ROUTES.HOME)} title="Account settings" />
 
       <section className="settings-hero">
         <div className="settings-avatar avatar avatar-dark">FK</div>

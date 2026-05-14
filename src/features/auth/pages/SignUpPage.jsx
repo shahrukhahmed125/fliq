@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import BrandLockup from '../brand/BrandLockup'
-import GoogleIcon from '../icons/GoogleIcon'
-import AppleIcon from '../icons/AppleIcon'
-import BackgroundPattern from './BackgroundPattern'
-import axios from 'axios'
+import BrandLockup from '@/components/brand/BrandLockup'
+import GoogleIcon from '@/components/icons/GoogleIcon'
+import AppleIcon from '@/components/icons/AppleIcon'
+import BackgroundPattern from '@/features/auth/components/BackgroundPattern'
 import { TextField } from '@mui/material'
-import Spinner from '../ui/Spinner'
+import Spinner from '@/components/ui/Spinner'
+import { authService } from '@/services/authService'
+import { storageService } from '@/services/storageService'
+import { ROUTES } from '@/lib/constants'
 
 function SignUpPage({ theme }) {
   const navigate = useNavigate()
@@ -52,15 +54,16 @@ function SignUpPage({ theme }) {
 
     try{
       setIsLoading(true)
-      const response = await axios.post(API_URL, formData);
-      localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
+      const response = await authService.register(formData)
+      storageService.setToken(response.token)
+      storageService.setUser(response.user)
 
       setFormData({
         name: '',
         email: '',
         password: '',
       });
+      navigate(ROUTES.HOME)
     } catch (error) {
       // Laravel validation errors
       if (error.response?.status === 422) {
@@ -83,10 +86,7 @@ function SignUpPage({ theme }) {
       }
 
     } finally {
-
       setIsLoading(false);
-      onSignUp();
-
     }
   };
 

@@ -1,8 +1,18 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import { Outlet, Navigate } from 'react-router-dom'
 import { storageService } from '@/services/storageService'
 
-export default function ProtectedRoute() {
+function ProtectedRoute() {
+  console.log('ProtectedRoute checking authentication...')
   const isAuthenticated = storageService.isAuthenticated()
+  console.log('Is authenticated:', isAuthenticated)
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/signin" replace />
+  if (!isAuthenticated) {
+    console.log('Redirecting to /signin')
+    return <Navigate to="/signin" replace />
+  }
+
+  console.log('Rendering Outlet')
+  return <Outlet />
 }
+
+export default ProtectedRoute

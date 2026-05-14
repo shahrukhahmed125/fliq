@@ -5,7 +5,9 @@ import { storageService } from '@/services/storageService'
 import './App.css'
 
 function App() {
+  console.log('App component rendering...')
   const { theme, setTheme } = useTheme()
+  console.log('Theme:', theme)
 
   const handleSignOut = () => {
     storageService.clear()
@@ -17,10 +19,10 @@ function App() {
 
   return (
     <BrowserRouter>
-      <AppRoutes 
-        theme={theme} 
-        onSignOut={handleSignOut} 
-        onThemeChange={handleThemeChange} 
+      <AppRoutes
+        theme={theme}
+        onSignOut={handleSignOut}
+        onThemeChange={handleThemeChange}
       />
     </BrowserRouter>
   )
