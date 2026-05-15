@@ -30,3 +30,8 @@ export const capitalizeFirst = (str) => {
   if (!str) return ''
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+export const getRandomCover = () => {
+  const random = Math.floor(Math.random() * 5) + 1
+  return `/cover/default-${random}.png`
+}

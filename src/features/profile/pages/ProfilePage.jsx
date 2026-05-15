@@ -4,7 +4,8 @@ import { profileHighlights, profilePosts } from '@/data/fliqData'
 import PostCard from '@/features/feed/components/PostCard'
 import { ROUTES } from '@/lib/constants'
 import { useAuth } from '@/context/useAuth'
-import { getInitials } from '@/lib/helpers'
+import { getInitials, getRandomCover } from '@/lib/helpers'
+
 
 function ProfilePage() {
   const navigate = useNavigate()
@@ -22,7 +23,16 @@ function ProfilePage() {
       </header>
 
       <section className="profile-hero">
-        <div className="profile-cover" />
+        <div
+          className="profile-cover"
+          style={{
+            backgroundImage: `url(${
+              user?.profile_cover
+                ? user.profile_cover
+                : getRandomCover()
+            })`
+          }}
+        />
         <div className="profile-main">
           <div className="profile-main-avatar">
             {user?.profile_photo ? (
