@@ -19,6 +19,7 @@ function SignUpPage({ theme }) {
     password: ''
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [errors, setErrors] = useState({})
   const [generalError, setGeneralError] = useState('')
 
@@ -95,7 +96,7 @@ function SignUpPage({ theme }) {
 
     onSuccess: async (tokenResponse) => {
 
-      setIsLoading(true)
+      setIsGoogleLoading(true)
       setErrors({})
       setGeneralError('')
 
@@ -135,7 +136,7 @@ function SignUpPage({ theme }) {
         }
 
       } finally {
-        setIsLoading(false)
+        setIsGoogleLoading(false)
       }
     },
 
@@ -189,9 +190,19 @@ function SignUpPage({ theme }) {
                 type="button"
                 className="social-button google"
                 onClick={() => googleLogin()}
+                disabled={isGoogleLoading}
               >
-                <GoogleIcon size={20} />
-                Continue with Google
+                {isGoogleLoading ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Spinner size={20} color="white" />
+                    Connecting...
+                  </span>
+                ) : (
+                  <>
+                    <GoogleIcon size={20} />
+                    Continue with Google
+                  </>
+                )}
               </button>
               <button 
                 type="button" 

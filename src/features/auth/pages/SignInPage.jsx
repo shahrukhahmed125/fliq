@@ -109,7 +109,7 @@ function SignInPage({ theme }) {
         }
 
       } finally {
-        setIsLoading(false)
+        setIsGoogleLoading(false)
       }
     },
 
@@ -160,24 +160,24 @@ function SignInPage({ theme }) {
         <div className="auth-right">
           <div className="auth-form-container">
             <div className="auth-social">
-            <button
-              type="button"
-              className="social-button google"
-              onClick={() => googleLogin()}
-              disabled={isGoogleLoading}
-            >
-              {isGoogleLoading ? (
-                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Spinner size={20} color="white" />
-                  Connecting...
-                </span>
-              ) : (
-                <>
-                  <GoogleIcon size={20} />
-                  Continue with Google
-                </>
-              )}
-            </button>
+              <button
+                type="button"
+                className="social-button google"
+                onClick={() => googleLogin()}
+                disabled={isGoogleLoading}
+              >
+                {isGoogleLoading ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Spinner size={20} color="white" />
+                    Connecting...
+                  </span>
+                ) : (
+                  <>
+                    <GoogleIcon size={20} />
+                    Continue with Google
+                  </>
+                )}
+              </button>
               <button 
                 type="button" 
                 className="social-button apple"
