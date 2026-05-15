@@ -1,15 +1,42 @@
-import { ArrowLeft, CalendarDays, Link as LinkIcon, MapPin, MoreHorizontal, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, CalendarDays, Link as LinkIcon, MapPin, MoreHorizontal, ShieldCheck, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { profileHighlights, profilePosts } from '@/data/fliqData'
 import PostCard from '@/features/feed/components/PostCard'
 import { ROUTES } from '@/lib/constants'
 import { useAuth } from '@/context/useAuth'
 import { getInitials, getRandomCover } from '@/lib/helpers'
+import { useEffect, useState } from 'react'
+import { postService } from '@/services/postService'
 
 
 function ProfilePage() {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(true)
+  
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true)
+
+        const response = await postService.getPosts({
+          user_id: user?.id
+        })
+
+        setPosts(response.data) // adjust if API shape differs
+      } catch (error) {
+        console.log('PROFILE POSTS ERROR:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (user?.id) {
+      fetchPosts()
+    }
+  }, [user])
+  
   return (
     <main className="profile-page" id="profile">
       <header className="profile-topbar">
@@ -97,9 +124,17 @@ function ProfilePage() {
       </section>
 
       <div className="post-list">
-        {profilePosts.map((post) => (
-          <PostCard post={post} key={post.handle} />
-        ))}
+        {loading ? (
+          <div className="loading-spinner">
+            <Loader2 className="spinner" size={32} />
+          </div>
+        ) : posts.length > 0 ? (
+          posts.map((post) => (
+            <PostCard post={post} key={post.id} />
+          ))
+        ) : (
+          <div className="empty-posts">No posts yet</div>
+        )}
       </div>
     </main>
   )

@@ -1,12 +1,30 @@
-import { Sparkles } from 'lucide-react'
-import { useState } from 'react'
-import { posts } from '@/data/fliqData'
+import { Sparkles, Loader2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import Composer from '@/features/feed/components/Composer'
 import PostCard from '@/features/feed/components/PostCard'
+import { postService } from '@/services/postService'
 
 function FeedPage() {
   const [activeTab, setActiveTab] = useState(0)
+  const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(true)
   const tabs = ['For You', 'Trending']
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true)
+        const response = await postService.getPosts()
+        setPosts(response.data || [])
+      } catch (error) {
+        console.log('FEED POSTS ERROR:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPosts()
+  }, [])
 
   return (
     <main className="feed" id="top">
@@ -34,9 +52,17 @@ function FeedPage() {
       <Composer />
       <button className="new-posts-pill" type="button">12 new posts</button>
       <div className="post-list">
-        {posts.map((post) => (
-          <PostCard post={post} key={post.handle} />
-        ))}
+        {loading ? (
+          <div className="loading-spinner">
+            <Loader2 className="spinner" size={32} />
+          </div>
+        ) : posts.length > 0 ? (
+          posts.map((post) => (
+            <PostCard post={post} key={post.id} />
+          ))
+        ) : (
+          <div className="empty-posts">No posts yet</div>
+        )}
       </div>
     </main>
   )

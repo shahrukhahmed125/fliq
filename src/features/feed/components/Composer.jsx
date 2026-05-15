@@ -1,4 +1,4 @@
-import { Hash, Image, X, Loader2 } from 'lucide-react'
+import { Hash, Image, X, Loader2, Video } from 'lucide-react'
 import { useAuth } from '@/context/useAuth'
 import { getInitials } from '@/lib/helpers'
 import { useState, useRef } from 'react'
@@ -8,15 +8,17 @@ function Composer({ compact = false }) {
   const [text, setText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [images, setImages] = useState([])
+  const [videos, setVideos] = useState([])
   const [topics, setTopics] = useState([])
   const [showTopicInput, setShowTopicInput] = useState(false)
   const [topicInput, setTopicInput] = useState('')
   const fileInputRef = useRef(null)
+  const videoInputRef = useRef(null)
   const { user } = useAuth()
 
   const handlePost = async (e) => {
     e.preventDefault()
-    if (!text.trim() && images.length === 0) return
+    if (!text.trim() && images.length === 0 && videos.length === 0) return
 
     try {
       setIsLoading(true)
@@ -25,6 +27,9 @@ function Composer({ compact = false }) {
       formData.append('content', text)
       images.forEach((image) => {
         formData.append('media[]', image)
+      })
+      videos.forEach((video) => {
+        formData.append('media[]', video)
       })
       topics.forEach((topic) => {
         formData.append('topics[]', topic)
@@ -35,6 +40,7 @@ function Composer({ compact = false }) {
 
       setText('')
       setImages([])
+      setVideos([])
       setTopics([])
       setTopicInput('')
 
@@ -56,6 +62,19 @@ function Composer({ compact = false }) {
 
   const removeImage = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleVideoClick = () => {
+    videoInputRef.current?.click()
+  }
+
+  const handleVideoChange = (e) => {
+    const files = Array.from(e.target.files)
+    setVideos((prev) => [...prev, ...files])
+  }
+
+  const removeVideo = (index) => {
+    setVideos((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleTopicClick = () => {
@@ -112,6 +131,24 @@ function Composer({ compact = false }) {
             </div>
           )}
 
+          {videos.length > 0 && (
+            <div className="composer-videos">
+              {videos.map((video, index) => (
+                <div key={index} className="composer-video-preview">
+                  <video src={URL.createObjectURL(video)} controls />
+                  <button
+                    type="button"
+                    className="remove-video"
+                    onClick={() => removeVideo(index)}
+                    aria-label="Remove video"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           {topics.length > 0 && (
             <div className="composer-topics">
               {topics.map((topic) => (
@@ -160,10 +197,22 @@ function Composer({ compact = false }) {
             onChange={handleImageChange}
           />
 
+          <input
+            ref={videoInputRef}
+            type="file"
+            accept="video/*"
+            multiple
+            style={{ display: 'none' }}
+            onChange={handleVideoChange}
+          />
+
           <div className="composer-actions">
             <div className="composer-tools">
               <button type="button" aria-label="Add image" onClick={handleImageClick}>
                 <Image size={18} />
+              </button>
+              <button type="button" aria-label="Add video" onClick={handleVideoClick}>
+                <Video size={18} />
               </button>
               <button type="button" aria-label="Add topic" onClick={handleTopicClick}>
                 <Hash size={18} />
