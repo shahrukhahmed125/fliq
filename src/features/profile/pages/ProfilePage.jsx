@@ -66,7 +66,7 @@ function ProfilePage() {
             <div className="profile-meta">
               <span><MapPin size={15} /> Pakistan</span>
               <span><LinkIcon size={15} /> fliq.pk</span>
-              <span><CalendarDays size={15} /> Joined May 2026</span>
+              <span><CalendarDays size={15} /> Joined {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'May 2026'}</span>
             </div>
             <div className="profile-stats-row">
               {profileHighlights.map(([value, label]) => (
