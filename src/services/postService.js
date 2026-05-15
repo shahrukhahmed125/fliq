@@ -12,7 +12,7 @@ export const postService = {
   },
 
   createPost: async (postData) => {
-    const response = await api.post('/posts', postData)
+    const response = await api.post('/posts/store', postData)
     return response.data
   },
 

@@ -2,11 +2,7 @@ import axios from 'axios'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080/api',
-  withCredentials: false,
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
+  withCredentials: false
 })
 
 // Request interceptor to add auth token
