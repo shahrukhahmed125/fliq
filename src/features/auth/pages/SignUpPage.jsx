@@ -10,9 +10,11 @@ import { authService } from '@/services/authService'
 import { storageService } from '@/services/storageService'
 import { ROUTES } from '@/lib/constants'
 import { useGoogleLogin } from '@react-oauth/google'
+import { useAuth } from '@/context/useAuth'
 
 function SignUpPage({ theme }) {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -57,8 +59,10 @@ function SignUpPage({ theme }) {
     try{
       setIsLoading(true)
       const response = await authService.register(formData)
-      storageService.setToken(response.token)
-      storageService.setUser(response.data)
+      const user = response.data?.user || response.data
+      const token = response.token
+      
+      login(user, token)
 
       setFormData({
         name: '',
@@ -67,6 +71,7 @@ function SignUpPage({ theme }) {
       });
       navigate(ROUTES.HOME)
     } catch (error) {
+      console.log("SIGN UP ERROR:", error.response?.data || error)
       // Laravel validation errors
       if (error.response?.status === 422) {
 
@@ -103,9 +108,10 @@ function SignUpPage({ theme }) {
       try {
 
         const response = await authService.googleLogin(tokenResponse)
-
-        storageService.setToken(response.token)
-        storageService.setUser(response.data)
+        const user = response.data?.user || response.data
+        const token = response.token
+        
+        login(user, token)
 
         setFormData({
           email: '',
@@ -116,6 +122,7 @@ function SignUpPage({ theme }) {
 
       } catch (error) {
 
+        console.log("GOOGLE LOGIN ERROR:", error.response?.data || error)
         if (error.response?.status === 422) {
 
           const validationErrors = error.response.data.errors

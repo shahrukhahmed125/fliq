@@ -3,9 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { profileHighlights, profilePosts } from '@/data/fliqData'
 import PostCard from '@/features/feed/components/PostCard'
 import { ROUTES } from '@/lib/constants'
+import { useAuth } from '@/context/useAuth'
+import { getInitials } from '@/lib/helpers'
 
 function ProfilePage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   return (
     <main className="profile-page" id="profile">
       <header className="profile-topbar">
@@ -13,7 +16,7 @@ function ProfilePage() {
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h1>Fliq Studio</h1>
+          <h1>{user?.name || 'Fliq Studio'}</h1>
           <span>42 posts</span>
         </div>
       </header>
@@ -21,7 +24,17 @@ function ProfilePage() {
       <section className="profile-hero">
         <div className="profile-cover" />
         <div className="profile-main">
-          <div className="profile-main-avatar">FK</div>
+          <div className="profile-main-avatar">
+            {user?.profile_photo ? (
+              <img
+                src={user.profile_photo}
+                alt="profile"
+                className="avatar-img"
+              />
+            ) : (
+              <span className="avatar-fallback">{getInitials(user?.name || 'Fliq Studio')}</span>
+            )}
+          </div>
           <div className="profile-actions">
             <button className="profile-action-button" type="button" aria-label="More profile actions">
               <MoreHorizontal size={19} />
@@ -31,15 +44,14 @@ function ProfilePage() {
 
           <div className="profile-identity">
             <div className="profile-name-row">
-              <h2>Fliq Studio</h2>
+              <h2>{user?.name || 'Fliq Studio'}</h2>
               <span className="verified-badge" aria-label="Verified profile">
                 <ShieldCheck size={14} />
               </span>
             </div>
-            <div className="profile-handle">@fliq</div>
+            <div className="profile-handle">{user?.username || '@fliq'}</div>
             <p className="profile-bio">
-              Building a calmer public square for Pakistan. Product notes, community updates,
-              creator tools, and design thinking for the next generation of social media.
+              {user?.bio || 'Building a calmer public square for Pakistan. Product notes, community updates, creator tools, and design thinking for the next generation of social media.'}
             </p>
             <div className="profile-meta">
               <span><MapPin size={15} /> Pakistan</span>

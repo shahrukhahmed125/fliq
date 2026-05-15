@@ -2,6 +2,7 @@ import { BrowserRouter } from 'react-router-dom'
 import AppRoutes from '@/routes/AppRoutes'
 import { useTheme } from '@/hooks/useTheme'
 import { storageService } from '@/services/storageService'
+import { AuthProvider } from '@/context/AuthProvider'
 import './App.css'
 
 function App() {
@@ -18,13 +19,15 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <AppRoutes
-        theme={theme}
-        onSignOut={handleSignOut}
-        onThemeChange={handleThemeChange}
-      />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes
+          theme={theme}
+          onSignOut={handleSignOut}
+          onThemeChange={handleThemeChange}
+        />
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

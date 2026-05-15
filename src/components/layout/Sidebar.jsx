@@ -7,6 +7,8 @@ import Spinner from '@/components/ui/Spinner'
 import { authService } from '@/services/authService'
 import { storageService } from '@/services/storageService'
 import { ROUTES } from '@/lib/constants'
+import { useAuth } from '@/context/useAuth'
+import { getInitials } from '@/lib/helpers'
 
 function Sidebar({ theme, onSignOut }) {
   const navigate = useNavigate()
@@ -14,7 +16,7 @@ function Sidebar({ theme, onSignOut }) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const profileMenuRef = useRef(null)
-  const user = storageService.getUser()
+  const { user } = useAuth()
 
   useEffect(() => {
     function handlePointerDown(event) {
@@ -104,10 +106,29 @@ function Sidebar({ theme, onSignOut }) {
         {isProfileMenuOpen && (
           <div className="profile-menu" role="menu" aria-label="Account menu">
             <div className="profile-menu-header">
-              <div className="avatar avatar-dark">FK</div>
+              <div className="avatar">
+                {user?.profile_photo ? (
+                  <img
+                    src={user.profile_photo}
+                    alt="profile"
+                    className="avatar-img"
+                  />
+                ) : (
+                  <span className="avatar-fallback">
+                    {getInitials(user?.name)}
+                  </span>
+                )}
+              </div>
               <div>
-                <strong>{user?.name}</strong>
-                <span>@fliq</span>
+              <div className="profile-info">
+                <strong className="profile-name" title={user?.name}>
+                  {user?.name || 'Unknown User'}
+                </strong>
+
+                <span className="profile-username" title={user?.username}>
+                  {user?.username || '@user'}
+                </span>
+              </div>
               </div>
             </div>
             <button
@@ -165,10 +186,27 @@ function Sidebar({ theme, onSignOut }) {
           </div>
         )}
         <div className={isProfileMenuOpen ? 'sidebar-profile active' : 'sidebar-profile'}>
-          <div className="avatar avatar-green">FK</div>
-          <div>
-            <strong>Fliq Studio</strong>
-            <span>@fliq</span>
+          <div className="avatar">
+            {user?.profile_photo ? (
+              <img
+                src={user.profile_photo}
+                alt="profile"
+                className="avatar-img"
+              />
+            ) : (
+              <span className="avatar-fallback">
+                {getInitials(user?.name)}
+              </span>
+            )}
+          </div>
+          <div className="profile-info">
+            <strong className="profile-name">
+              {user?.name || 'Unknown User'}
+            </strong>
+
+            <span className="profile-username">
+              {user?.username || '@user'}
+            </span>
           </div>
           <button
             className="profile-more-button"
