@@ -58,7 +58,7 @@ function SignUpPage({ theme }) {
       setIsLoading(true)
       const response = await authService.register(formData)
       storageService.setToken(response.token)
-      storageService.setUser(response.user)
+      storageService.setUser(response.data)
 
       setFormData({
         name: '',
@@ -105,7 +105,7 @@ function SignUpPage({ theme }) {
         const response = await authService.googleLogin(tokenResponse)
 
         storageService.setToken(response.token)
-        storageService.setUser(response.user)
+        storageService.setUser(response.data)
 
         setFormData({
           email: '',

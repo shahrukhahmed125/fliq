@@ -21,19 +21,12 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{
-          padding: '20px',
-          backgroundColor: '#fee',
-          color: '#c33',
-          fontFamily: 'monospace'
-        }}>
-          <h2>Something went wrong</h2>
-          <details style={{ whiteSpace: 'pre-wrap' }}>
-            {this.state.error && this.state.error.toString()}
-            <br />
-            {this.state.errorInfo.componentStack}
-          </details>
-        </div>
+      <div>
+        <h2>Something went wrong</h2>
+        <pre>
+          {this.state.errorInfo?.componentStack || 'No stack trace'}
+        </pre>
+      </div>
       )
     }
 

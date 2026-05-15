@@ -33,7 +33,7 @@ function SignInPage({ theme }) {
       
       // Store token and user data using storageService
       storageService.setToken(response.token)
-      storageService.setUser(response.user)
+      storageService.setUser(response.data)
       
       // Reset form
       setFormData({
@@ -78,7 +78,7 @@ function SignInPage({ theme }) {
         const response = await authService.googleLogin(tokenResponse)
 
         storageService.setToken(response.token)
-        storageService.setUser(response.user)
+        storageService.setUser(response.data)
 
         setFormData({
           email: '',

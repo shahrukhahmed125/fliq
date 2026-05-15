@@ -6,8 +6,18 @@ export const storageService = {
   removeToken: () => localStorage.removeItem('token'),
   
   getUser: () => {
-    const user = localStorage.getItem('user')
-    return user ? JSON.parse(user) : null
+    try {
+      const user = localStorage.getItem('user')
+
+      if (!user || user === 'undefined' || user === 'null') {
+        return null
+      }
+
+      return JSON.parse(user)
+    } catch (error) {
+      console.error('Invalid user in localStorage:', error)
+      return null
+    }
   },
   
   setUser: (user) => localStorage.setItem('user', JSON.stringify(user)),

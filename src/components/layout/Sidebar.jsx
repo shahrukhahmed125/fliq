@@ -14,6 +14,7 @@ function Sidebar({ theme, onSignOut }) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const profileMenuRef = useRef(null)
+  const user = storageService.getUser()
 
   useEffect(() => {
     function handlePointerDown(event) {
@@ -105,7 +106,7 @@ function Sidebar({ theme, onSignOut }) {
             <div className="profile-menu-header">
               <div className="avatar avatar-dark">FK</div>
               <div>
-                <strong>Fliq Studio</strong>
+                <strong>{user?.name}</strong>
                 <span>@fliq</span>
               </div>
             </div>
