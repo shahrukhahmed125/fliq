@@ -341,10 +341,16 @@
   background: transparent;
   color: var(--fliq-ink);
   font: 16px/1.5 var(--fliq-font);
+  transition: opacity 160ms ease;
 }
 
 .composer textarea::placeholder {
   color: #98a19d;
+}
+
+.composer textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .composer-actions {
@@ -366,15 +372,58 @@
   height: 34px;
   border-radius: 8px;
   color: var(--fliq-accent);
+  transition: background 160ms ease, opacity 160ms ease;
+}
+
+.composer-tools button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .primary-action {
   min-height: 36px;
   padding: 0 18px;
+  transition: all 160ms ease;
 }
 
 .primary-action .spinner {
   animation: spin 1s linear infinite;
+}
+
+.primary-action.success {
+  background: #059669;
+  animation: successPulse 0.6s ease-out;
+}
+
+.primary-action.success .check-icon {
+  animation: checkmark 0.4s ease-out 0.1s both;
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
 }
 
 @keyframes spin {
@@ -420,11 +469,16 @@
   background: rgba(0, 0, 0, 0.6);
   color: white;
   cursor: pointer;
-  transition: background 160ms ease;
+  transition: background 160ms ease, opacity 160ms ease;
 }
 
-.remove-image:hover {
+.remove-image:hover:not(:disabled) {
   background: rgba(0, 0, 0, 0.8);
+}
+
+.remove-image:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .composer-videos {
@@ -461,11 +515,16 @@
   background: rgba(0, 0, 0, 0.6);
   color: white;
   cursor: pointer;
-  transition: background 160ms ease;
+  transition: background 160ms ease, opacity 160ms ease;
 }
 
-.remove-video:hover {
+.remove-video:hover:not(:disabled) {
   background: rgba(0, 0, 0, 0.8);
+}
+
+.remove-video:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .composer-topics {
@@ -497,11 +556,16 @@
   background: transparent;
   color: var(--fliq-accent-strong);
   cursor: pointer;
-  transition: background 160ms ease;
+  transition: background 160ms ease, opacity 160ms ease;
 }
 
-.remove-topic:hover {
+.remove-topic:hover:not(:disabled) {
   background: rgba(16, 185, 129, 0.2);
+}
+
+.remove-topic:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .composer-topic-input {
@@ -586,6 +650,18 @@
   padding: 18px 22px;
   border-top: 1px solid var(--fliq-border);
   text-align: left;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .post-content {

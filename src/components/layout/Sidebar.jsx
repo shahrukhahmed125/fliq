@@ -162,7 +162,7 @@ function Sidebar({ theme, onSignOut }) {
               }}
             >
               <Moon size={17} />
-              Display mode
+              Appearance
             </button>
             <button 
               className="danger-menu-item" 

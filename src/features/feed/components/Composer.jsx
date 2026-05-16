@@ -1,12 +1,13 @@
-import { Hash, Image, X, Loader2, Video } from 'lucide-react'
+import { Hash, Image, X, Loader2, Video, Check } from 'lucide-react'
 import { useAuth } from '@/context/useAuth'
 import { getInitials } from '@/lib/helpers'
 import { useState, useRef } from 'react'
 import { postService } from '@/services/postService'
 
-function Composer({ compact = false }) {
+function Composer({ compact = false, onPostSuccess }) {
   const [text, setText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
   const [images, setImages] = useState([])
   const [videos, setVideos] = useState([])
   const [topics, setTopics] = useState([])
@@ -38,11 +39,23 @@ function Composer({ compact = false }) {
       const response = await postService.createPost(formData)
       console.log('POST RESPONSE:', response)
 
-      setText('')
-      setImages([])
-      setVideos([])
-      setTopics([])
-      setTopicInput('')
+      // Show success animation
+      setShowSuccess(true)
+      
+      // Clear form after a brief delay
+      setTimeout(() => {
+        setText('')
+        setImages([])
+        setVideos([])
+        setTopics([])
+        setTopicInput('')
+        setShowSuccess(false)
+        
+        // Notify parent to refresh feed
+        if (onPostSuccess) {
+          onPostSuccess(response.data)
+        }
+      }, 1500)
 
     } catch (error) {
       console.log('POST ERROR:', error.response?.data || error)
@@ -111,6 +124,7 @@ function Composer({ compact = false }) {
             name='content'
             value={text}
             onChange={(e) => setText(e.target.value)}
+            disabled={isLoading || showSuccess}
           />
           
           {images.length > 0 && (
@@ -123,6 +137,7 @@ function Composer({ compact = false }) {
                     className="remove-image"
                     onClick={() => removeImage(index)}
                     aria-label="Remove image"
+                    disabled={isLoading || showSuccess}
                   >
                     <X size={14} />
                   </button>
@@ -141,6 +156,7 @@ function Composer({ compact = false }) {
                     className="remove-video"
                     onClick={() => removeVideo(index)}
                     aria-label="Remove video"
+                    disabled={isLoading || showSuccess}
                   >
                     <X size={14} />
                   </button>
@@ -159,6 +175,7 @@ function Composer({ compact = false }) {
                     className="remove-topic"
                     onClick={() => removeTopic(topic)}
                     aria-label="Remove topic"
+                    disabled={isLoading || showSuccess}
                   >
                     <X size={12} />
                   </button>
@@ -208,18 +225,27 @@ function Composer({ compact = false }) {
 
           <div className="composer-actions">
             <div className="composer-tools">
-              <button type="button" aria-label="Add image" onClick={handleImageClick}>
+              <button type="button" aria-label="Add image" onClick={handleImageClick} disabled={isLoading || showSuccess}>
                 <Image size={18} />
               </button>
-              <button type="button" aria-label="Add video" onClick={handleVideoClick}>
+              <button type="button" aria-label="Add video" onClick={handleVideoClick} disabled={isLoading || showSuccess}>
                 <Video size={18} />
               </button>
-              <button type="button" aria-label="Add topic" onClick={handleTopicClick}>
+              <button type="button" aria-label="Add topic" onClick={handleTopicClick} disabled={isLoading || showSuccess}>
                 <Hash size={18} />
               </button>
             </div>
-            <button className="primary-action" type="submit" disabled={isLoading}>
-              {isLoading ? (
+            <button 
+              className={`primary-action ${showSuccess ? 'success' : ''}`} 
+              type="submit" 
+              disabled={isLoading || showSuccess}
+            >
+              {showSuccess ? (
+                <>
+                  <Check className="check-icon" size={16} />
+                  Posted!
+                </>
+              ) : isLoading ? (
                 <>
                   <Loader2 className="spinner" size={16} />
                   Posting...

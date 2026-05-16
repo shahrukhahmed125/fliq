@@ -14,11 +14,18 @@ function FeedPage() {
   const lastPostIds = useRef(new Set())
   const tabs = ['For You', 'Trending']
 
+  const handlePostSuccess = (newPost) => {
+    if (newPost) {
+      setPosts((prev) => [newPost, ...prev])
+      lastPostIds.current.add(newPost.id)
+    }
+  }
+
   const fetchPosts = async (isPolling = false) => {
     try {
       if (!isPolling) setLoading(true)
-      const response = await postService.getPosts()
-      const newPosts = response.data || []
+      const newPosts = await postService.getPosts()
+      console.log('FEED POSTS FETCHED:', newPosts)
       
       if (isPolling && newPosts.length > 0) {
         const currentPostIds = new Set(newPosts.map(p => p.id))
@@ -35,7 +42,8 @@ function FeedPage() {
         setShowNewPostsPill(false)
       }
     } catch (error) {
-      console.log('FEED POSTS ERROR:', error)
+      console.error('FEED POSTS ERROR:', error)
+      console.error('Error response:', error.response?.data)
     } finally {
       if (!isPolling) setLoading(false)
     }
@@ -88,7 +96,7 @@ function FeedPage() {
           </button>
         ))}
       </div>
-      <Composer />
+      <Composer onPostSuccess={handlePostSuccess} />
       {showNewPostsPill && (
         <button 
           className="new-posts-pill" 

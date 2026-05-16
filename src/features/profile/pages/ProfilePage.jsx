@@ -20,13 +20,15 @@ function ProfilePage() {
       try {
         setLoading(true)
 
-        const response = await postService.getPosts({
+        const posts = await postService.getPosts({
           user_id: user?.id
         })
+        console.log('PROFILE POSTS FETCHED:', posts)
 
-        setPosts(response.data) // adjust if API shape differs
+        setPosts(posts)
       } catch (error) {
-        console.log('PROFILE POSTS ERROR:', error)
+        console.error('PROFILE POSTS ERROR:', error)
+        console.error('Error response:', error.response?.data)
       } finally {
         setLoading(false)
       }

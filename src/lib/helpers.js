@@ -32,6 +32,6 @@ export const capitalizeFirst = (str) => {
 }
 
 export const getRandomCover = () => {
-  const random = Math.floor(Math.random() * 5) + 1
+  const random = Math.floor(Math.random() * 4) + 1
   return `/cover/default-${random}.png`
 }

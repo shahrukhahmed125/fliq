@@ -43,17 +43,7 @@ function AccountSettingsPage() {
   const navigate = useNavigate()
   return (
     <main className="settings-page" id="account-settings">
-      <SettingsTopbar eyebrow="Privacy, login, and preferences" onBack={() => navigate(ROUTES.HOME)} title="Account settings" />
-
-      <section className="settings-hero">
-        <div className="settings-avatar avatar avatar-dark">FK</div>
-        <div>
-          <h2>Fliq Studio</h2>
-          <span>@fliq</span>
-          <p>Manage the core account details that shape your identity across Fliq.</p>
-        </div>
-        <button className="primary-action" type="button">Save changes</button>
-      </section>
+      <SettingsTopbar eyebrow="Privacy, login, and preferences" onBack={() => navigate(ROUTES.HOME)} title="Settings" />
 
       <div className="settings-section-list">
         {accountSections.map((section) => (
