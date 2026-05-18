@@ -16,8 +16,15 @@ export const postService = {
     return response.data?.data || response.data
   },
 
-  createPost: async (postData) => {
-    const response = await api.post('/posts/store', postData)
+  createPost: async (postData, onUploadProgress) => {
+    const response = await api.post('/posts/store', postData, {
+      onUploadProgress: (progressEvent) => {
+        if (onUploadProgress) {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          onUploadProgress(progress)
+        }
+      }
+    })
     console.log('CREATE POST RESPONSE:', response.data)
     // Handle Laravel API response structure: { status, message, data: {...} }
     return response.data?.data || response.data

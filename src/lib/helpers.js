@@ -35,3 +35,7 @@ export const getRandomCover = () => {
   const random = Math.floor(Math.random() * 4) + 1
   return `/cover/default-${random}.png`
 }
+
+export const getMediaUrl = (path) => {
+  return `${import.meta.env.VITE_MEDIA_URL}/${path}`;
+};

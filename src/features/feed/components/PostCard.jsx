@@ -1,4 +1,5 @@
 import { Heart, MessageCircle, Repeat2, Send } from 'lucide-react'
+import { getMediaUrl } from '@/lib/helpers'
 
 function PostCard({ post }) {
   return (
@@ -30,9 +31,9 @@ function PostCard({ post }) {
           <div className="post-media">
             {post.media.map((m) => (
               m.file_type === 'image' ? (
-                <img key={m.id} src={m.file_path} alt="" />
+                <img key={m.id} src={getMediaUrl(m.file_path)} alt="" />
               ) : (
-                <video key={m.id} src={m.file_path} controls />
+                <video key={m.id} src={getMediaUrl(m.file_path)} controls />
               )
             ))}
           </div>

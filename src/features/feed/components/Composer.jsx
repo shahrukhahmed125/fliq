@@ -8,6 +8,8 @@ function Composer({ compact = false, onPostSuccess }) {
   const [text, setText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [showUploadProgress, setShowUploadProgress] = useState(false)
   const [images, setImages] = useState([])
   const [videos, setVideos] = useState([])
   const [topics, setTopics] = useState([])
@@ -23,6 +25,8 @@ function Composer({ compact = false, onPostSuccess }) {
 
     try {
       setIsLoading(true)
+      setShowUploadProgress(true)
+      setUploadProgress(0)
 
       const formData = new FormData()
       formData.append('content', text)
@@ -36,11 +40,14 @@ function Composer({ compact = false, onPostSuccess }) {
         formData.append('topics[]', topic)
       })
 
-      const response = await postService.createPost(formData)
+      const response = await postService.createPost(formData, (progress) => {
+        setUploadProgress(progress)
+      })
       console.log('POST RESPONSE:', response)
 
       // Show success animation
       setShowSuccess(true)
+      setShowUploadProgress(false)
       
       // Clear form after a brief delay
       setTimeout(() => {
@@ -50,6 +57,7 @@ function Composer({ compact = false, onPostSuccess }) {
         setTopics([])
         setTopicInput('')
         setShowSuccess(false)
+        setUploadProgress(0)
         
         // Notify parent to refresh feed
         if (onPostSuccess) {
@@ -59,6 +67,8 @@ function Composer({ compact = false, onPostSuccess }) {
 
     } catch (error) {
       console.log('POST ERROR:', error.response?.data || error)
+      setShowUploadProgress(false)
+      setUploadProgress(0)
     } finally {
       setIsLoading(false)
     }
@@ -117,6 +127,20 @@ function Composer({ compact = false, onPostSuccess }) {
         ) : (getInitials(user?.name))}
       </div>
       <div className="composer-body">
+        {showUploadProgress && (
+          <div className="upload-progress-bar">
+            <div className="upload-progress-info">
+              <span>Uploading...</span>
+              <span>{uploadProgress}%</span>
+            </div>
+            <div className="upload-progress-track">
+              <div 
+                className="upload-progress-fill" 
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
         <form className="composer-form" onSubmit={handlePost}>
           <textarea
             placeholder="What's in your mind today?"
