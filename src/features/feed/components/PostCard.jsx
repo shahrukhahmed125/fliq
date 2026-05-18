@@ -48,14 +48,14 @@ function PostCard({ post }) {
         {post?.media?.length > 0 && (
           <div className={`post-media ${getMediaClass()}`}>
             {post.media.map((m) => {
-              if (m.status === 'pending') {
+              if (m.status !== 'completed') {
                 return <LoadingPlaceholder key={m.id} />
               }
 
               return m.file_type === 'image' ? (
                 <img key={m.id} src={getMediaUrl(m.file_path)} alt="" />
               ) : (
-                <video key={m.id} src={getMediaUrl(m.file_path)} controls autoPlay/>
+                <video key={m.id} src={getMediaUrl(m.file_path)} controls autoPlay />
               )
             })}
           </div>
