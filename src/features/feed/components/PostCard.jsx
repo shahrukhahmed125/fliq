@@ -1,7 +1,25 @@
-import { Heart, MessageCircle, Repeat2, Send } from 'lucide-react'
+import { Heart, MessageCircle, Repeat2, Send, Loader2 } from 'lucide-react'
 import { getMediaUrl } from '@/lib/helpers'
 
+function LoadingPlaceholder() {
+  return (
+    <div className="media-loading-placeholder">
+      <Loader2 className="spinner" size={24} />
+      <span>Processing...</span>
+    </div>
+  )
+}
+
 function PostCard({ post }) {
+  const mediaCount = post?.media?.length || 0
+  const getMediaClass = () => {
+    if (mediaCount === 1) return 'single'
+    if (mediaCount === 2) return 'two'
+    if (mediaCount === 3) return 'three'
+    if (mediaCount === 4) return 'four'
+    return ''
+  }
+
   return (
     <article className="post-card">
 
@@ -28,14 +46,18 @@ function PostCard({ post }) {
 
         {/* MEDIA */}
         {post?.media?.length > 0 && (
-          <div className="post-media">
-            {post.media.map((m) => (
-              m.file_type === 'image' ? (
+          <div className={`post-media ${getMediaClass()}`}>
+            {post.media.map((m) => {
+              if (m.status === 'pending') {
+                return <LoadingPlaceholder key={m.id} />
+              }
+
+              return m.file_type === 'image' ? (
                 <img key={m.id} src={getMediaUrl(m.file_path)} alt="" />
               ) : (
-                <video key={m.id} src={getMediaUrl(m.file_path)} controls />
+                <video key={m.id} src={getMediaUrl(m.file_path)} controls autoPlay/>
               )
-            ))}
+            })}
           </div>
         )}
 

@@ -747,41 +747,180 @@
   font-size: 13px;
 }
 
+/* =========================
+   Post Media Container
+========================= */
+
 .post-media {
   margin-top: 12px;
   display: grid;
   gap: 8px;
-  border-radius: 12px;
+  border-radius: 18px;
   overflow: hidden;
+  width: 100%;
 }
 
-.post-media:has(img:only-child),
-.post-media:has(video:only-child) {
+/* =========================
+   Layouts
+========================= */
+
+/* Single media */
+.post-media.single {
   grid-template-columns: 1fr;
 }
 
-.post-media:has(img:nth-child(2):last-child) {
+/* Two media */
+.post-media.two {
   grid-template-columns: repeat(2, 1fr);
 }
 
-.post-media:has(img:nth-child(3):last-child),
-.post-media:has(img:nth-child(4):last-child) {
+/* Three media */
+.post-media.three {
   grid-template-columns: repeat(2, 1fr);
 }
+
+/* Four media */
+.post-media.four {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* =========================
+   Shared Media Style
+========================= */
 
 .post-media img,
 .post-media video {
-  /* width: 100%; */
-  max-height: 500px;
-  object-fit: cover;
-  border-radius: 12px;
+  width: 100%;
   display: block;
+  border-radius: 16px;
   background: var(--fliq-soft);
 }
 
+/* =========================
+   Images
+========================= */
+
+/* Single image behaves naturally like X */
+.post-media.single img {
+  max-height: 650px;
+  object-fit: cover;
+}
+
+/* Multi-image behaves like Threads */
+.post-media.two img,
+.post-media.three img,
+.post-media.four img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+/* =========================
+   Videos
+========================= */
+
 .post-media video {
+  max-height: 700px;
   object-fit: contain;
-  max-height: 600px;
+  background: #000;
+}
+
+/* Optional fixed ratio for multiple videos */
+.post-media.two video,
+.post-media.three video,
+.post-media.four video {
+  aspect-ratio: 1 / 1;
+}
+
+/* =========================
+   Three Media Special Layout
+========================= */
+
+/*
+   First image large
+   Last two stacked
+*/
+
+.post-media.three > :first-child {
+  grid-row: span 2;
+  height: 100%;
+}
+
+/* =========================
+   Hover Effects
+========================= */
+
+.post-media img:hover,
+.post-media video:hover {
+  opacity: 0.96;
+  transition: opacity 0.2s ease;
+}
+
+/* =========================
+   Mobile Responsive
+========================= */
+
+@media (max-width: 768px) {
+  .post-media {
+    gap: 6px;
+    border-radius: 14px;
+  }
+
+  .post-media img,
+  .post-media video {
+    border-radius: 12px;
+  }
+
+  .post-media.single img,
+  .post-media.single video {
+    max-height: 500px;
+  }
+}
+
+/* =========================
+   Skeleton Loading Placeholder
+========================= */
+
+.media-skeleton {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 16px;
+  background: linear-gradient(
+    90deg,
+    #f1f1f1 25%,
+    #e5e5e5 37%,
+    #f1f1f1 63%
+  );
+  background-size: 400% 100%;
+  animation: mediaLoading 1.4s ease infinite;
+}
+
+@keyframes mediaLoading {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+.media-loading-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 200px;
+  border-radius: 12px;
+  background: var(--fliq-soft);
+  color: var(--fliq-muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.media-loading-placeholder .spinner {
+  animation: spin 1s linear infinite;
+  color: var(--fliq-accent);
 }
 
 .avatar {
