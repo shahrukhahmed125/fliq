@@ -15,28 +15,38 @@ function ProfilePage() {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true)
+  const fetchPosts = async () => {
+    try {
+      setLoading(true)
 
-        const posts = await postService.getPosts({
-          user_id: user?.id
-        })
-        console.log('PROFILE POSTS FETCHED:', posts)
+      const posts = await postService.getPosts({
+        user_id: user?.id
+      })
+      console.log('PROFILE POSTS FETCHED:', posts)
 
-        setPosts(posts)
-      } catch (error) {
-        console.error('PROFILE POSTS ERROR:', error)
-        console.error('Error response:', error.response?.data)
-      } finally {
-        setLoading(false)
-      }
+      setPosts(posts)
+    } catch (error) {
+      console.error('PROFILE POSTS ERROR:', error)
+      console.error('Error response:', error.response?.data)
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     if (user?.id) {
       fetchPosts()
     }
+  }, [user])
+
+  useEffect(() => {
+    const pollInterval = setInterval(() => {
+      if (user?.id) {
+        fetchPosts()
+      }
+    }, 30000) // Poll every 30 seconds
+
+    return () => clearInterval(pollInterval)
   }, [user])
   
   return (

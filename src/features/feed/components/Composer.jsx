@@ -45,11 +45,10 @@ function Composer({ compact = false, onPostSuccess }) {
       })
       console.log('POST RESPONSE:', response)
 
-      // Show success animation
+      // Show success animation briefly, then clear immediately
       setShowSuccess(true)
       setShowUploadProgress(false)
       
-      // Clear form after a brief delay
       setTimeout(() => {
         setText('')
         setImages([])
@@ -59,11 +58,11 @@ function Composer({ compact = false, onPostSuccess }) {
         setShowSuccess(false)
         setUploadProgress(0)
         
-        // Notify parent to refresh feed
+        // Notify parent to refresh feed immediately
         if (onPostSuccess) {
           onPostSuccess(response.data)
         }
-      }, 1500)
+      }, 200)
 
     } catch (error) {
       console.log('POST ERROR:', error.response?.data || error)
