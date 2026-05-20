@@ -1,5 +1,7 @@
 import { Heart, MessageCircle, Repeat2, Send, Loader2 } from 'lucide-react'
 import { getMediaUrl } from '@/lib/helpers'
+import { useState } from 'react'
+import { postService } from '@/services/postService'
 
 function LoadingPlaceholder() {
   return (
@@ -11,6 +13,10 @@ function LoadingPlaceholder() {
 }
 
 function PostCard({ post }) {
+  const [isLiked, setIsLiked] = useState(post?.is_liked || false)
+  const [likesCount, setLikesCount] = useState(post?.likes_count || post?.likes || 0)
+  const [isLiking, setIsLiking] = useState(false)
+
   const mediaCount = post?.media?.length || 0
   const getMediaClass = () => {
     if (mediaCount === 1) return 'single'
@@ -18,6 +24,25 @@ function PostCard({ post }) {
     if (mediaCount === 3) return 'three'
     if (mediaCount === 4) return 'four'
     return ''
+  }
+
+  const handleLike = async () => {
+    if (isLiking) return
+    
+    try {
+      setIsLiking(true)
+      const response = await postService.toggleLike(post.uuid || post.id)
+      
+      // Update state based on response
+      if (response) {
+        setIsLiked(response.is_liked !== undefined ? response.is_liked : !isLiked)
+        setLikesCount(response.likes_count !== undefined ? response.likes_count : (isLiked ? likesCount - 1 : likesCount + 1))
+      }
+    } catch (error) {
+      console.error('Like error:', error)
+    } finally {
+      setIsLiking(false)
+    }
   }
 
   return (
@@ -61,18 +86,29 @@ function PostCard({ post }) {
           </div>
         )}
 
-        {/* ACTIONS (static for now) */}
+        {/* ACTIONS */}
         <div className="post-actions">
           <button type="button">
-            <MessageCircle size={18} /> 0
+            <MessageCircle size={18} /> {post?.comments_count || 0}
           </button>
 
           <button type="button">
-            <Repeat2 size={18} /> 0
+            <Repeat2 size={18} /> {post?.reposts_count || 0}
           </button>
 
-          <button type="button">
-            <Heart size={18} /> 0
+          <button 
+            type="button" 
+            onClick={handleLike}
+            disabled={isLiking}
+            className={isLiked ? 'liked' : ''}
+            aria-label={isLiked ? 'Unlike post' : 'Like post'}
+          >
+            {isLiking ? (
+              <Loader2 className="spinner" size={18} />
+            ) : (
+              <Heart size={18} fill={isLiked ? 'currentColor' : 'none'} />
+            )}
+            {likesCount}
           </button>
 
           <button type="button">

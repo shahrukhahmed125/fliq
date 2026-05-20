@@ -747,6 +747,14 @@
   font-size: 13px;
 }
 
+.post-actions button.liked {
+  color: #ef4444;
+}
+
+.post-actions button.liked:hover {
+  color: #dc2626;
+}
+
 /* =========================
    Post Media Container
 ========================= */

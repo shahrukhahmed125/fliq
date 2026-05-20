@@ -42,15 +42,9 @@ export const postService = {
     return response.data
   },
 
-  likePost: async (id) => {
-    const response = await api.post(`/posts/${id}/like`)
-    console.log('LIKE POST RESPONSE:', response.data)
-    return response.data?.data || response.data
-  },
-
-  unlikePost: async (id) => {
-    const response = await api.delete(`/posts/${id}/like`)
-    console.log('UNLIKE POST RESPONSE:', response.data)
+  toggleLike: async (uuid) => {
+    const response = await api.post(`/posts/${uuid}/like`)
+    console.log('TOGGLE LIKE RESPONSE:', response.data)
     return response.data?.data || response.data
   },
 
