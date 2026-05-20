@@ -2,6 +2,8 @@ import { Heart, MessageCircle, Repeat2, Send, Loader2 } from 'lucide-react'
 import { getMediaUrl } from '@/lib/helpers'
 import { useState } from 'react'
 import { postService } from '@/services/postService'
+import CommentList from './CommentList'
+import CommentForm from './CommentForm'
 
 function LoadingPlaceholder() {
   return (
@@ -16,6 +18,8 @@ function PostCard({ post }) {
   const [isLiked, setIsLiked] = useState(post?.is_liked || false)
   const [likesCount, setLikesCount] = useState(post?.likes_count || post?.likes || 0)
   const [isLiking, setIsLiking] = useState(false)
+  const [showComments, setShowComments] = useState(false)
+  const [commentsCount, setCommentsCount] = useState(post?.comments_count || 0)
 
   const mediaCount = post?.media?.length || 0
   const getMediaClass = () => {
@@ -43,6 +47,14 @@ function PostCard({ post }) {
     } finally {
       setIsLiking(false)
     }
+  }
+
+  const handleCommentClick = () => {
+    setShowComments(!showComments)
+  }
+
+  const handleCommentCountChange = (newCount) => {
+    setCommentsCount(newCount)
   }
 
   return (
@@ -88,8 +100,12 @@ function PostCard({ post }) {
 
         {/* ACTIONS */}
         <div className="post-actions">
-          <button type="button">
-            <MessageCircle size={18} /> {post?.comments_count || 0}
+          <button 
+            type="button"
+            onClick={handleCommentClick}
+            className={showComments ? 'active' : ''}
+          >
+            <MessageCircle size={18} /> {commentsCount}
           </button>
 
           <button type="button">
@@ -115,6 +131,23 @@ function PostCard({ post }) {
             <Send size={18} />
           </button>
         </div>
+
+        {/* COMMENTS SECTION */}
+        {showComments && (
+          <>
+            <CommentList
+              postUuid={post.uuid || post.id}
+              isOpen={showComments}
+              onCommentCountChange={handleCommentCountChange}
+            />
+            <CommentForm
+              postUuid={post.uuid || post.id}
+              onCommentAdded={(newComment) => {
+                handleCommentCountChange(commentsCount + 1)
+              }}
+            />
+          </>
+        )}
 
       </div>
     </article>
