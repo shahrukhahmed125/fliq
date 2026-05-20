@@ -1,5 +1,5 @@
 import { Heart, MessageCircle, Repeat2, Send, Loader2 } from 'lucide-react'
-import { getMediaUrl } from '@/lib/helpers'
+import { getMediaUrl, formatDate } from '@/lib/helpers'
 import { useState } from 'react'
 import { postService } from '@/services/postService'
 import CommentList from './CommentList'
@@ -82,7 +82,7 @@ function PostCard({ post }) {
 
             <span>
               {post?.user?.username || 'user'} ·
-              {new Date(post?.created_at).toLocaleDateString()}
+              {formatDate(post?.created_at) || 'Unknown Date'}
             </span>
           </div>
         </header>

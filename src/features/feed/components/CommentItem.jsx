@@ -63,7 +63,7 @@ function CommentItem({ comment, onDelete, onReply, currentUserId }) {
         <div className="comment-header">
           <div className="comment-user">
             <strong>{comment.user?.name || 'Unknown User'}</strong>
-            <span>@{comment.user?.username || 'user'}</span>
+            <span>{comment.user?.username || 'user'}</span>
             <span>·</span>
             <span>{formatDate(comment.created_at)}</span>
           </div>
