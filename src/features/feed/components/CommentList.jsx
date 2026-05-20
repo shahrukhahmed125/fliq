@@ -4,7 +4,7 @@ import { commentService } from '@/services/commentService'
 import CommentItem from './CommentItem'
 import { useAuth } from '@/context/useAuth'
 
-function CommentList({ postUuid, isOpen, onCommentCountChange }) {
+function CommentList({ postUuid, isOpen, onCommentCountChange, onReply }) {
   const [comments, setComments] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const { user } = useAuth()
@@ -46,6 +46,12 @@ function CommentList({ postUuid, isOpen, onCommentCountChange }) {
     }
   }
 
+  const handleReplyClick = (comment) => {
+    if (onReply) {
+      onReply(comment)
+    }
+  }
+
   if (!isOpen) return null
 
   return (
@@ -66,6 +72,7 @@ function CommentList({ postUuid, isOpen, onCommentCountChange }) {
               key={comment.uuid || comment.id}
               comment={comment}
               onDelete={handleDeleteComment}
+              onReply={handleReplyClick}
               currentUserId={user?.id}
             />
           ))}

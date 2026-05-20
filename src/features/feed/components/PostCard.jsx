@@ -20,6 +20,7 @@ function PostCard({ post }) {
   const [isLiking, setIsLiking] = useState(false)
   const [showComments, setShowComments] = useState(false)
   const [commentsCount, setCommentsCount] = useState(post?.comments_count || 0)
+  const [replyTo, setReplyTo] = useState(null)
 
   const mediaCount = post?.media?.length || 0
   const getMediaClass = () => {
@@ -55,6 +56,14 @@ function PostCard({ post }) {
 
   const handleCommentCountChange = (newCount) => {
     setCommentsCount(newCount)
+  }
+
+  const handleReply = (comment) => {
+    setReplyTo(comment)
+  }
+
+  const handleCancelReply = () => {
+    setReplyTo(null)
   }
 
   return (
@@ -139,11 +148,15 @@ function PostCard({ post }) {
               postUuid={post.uuid || post.id}
               isOpen={showComments}
               onCommentCountChange={handleCommentCountChange}
+              onReply={handleReply}
             />
             <CommentForm
               postUuid={post.uuid || post.id}
+              replyTo={replyTo}
+              onCancelReply={handleCancelReply}
               onCommentAdded={(newComment) => {
                 handleCommentCountChange(commentsCount + 1)
+                setReplyTo(null)
               }}
             />
           </>

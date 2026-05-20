@@ -1,10 +1,13 @@
-import { Trash2, MoreHorizontal } from 'lucide-react'
+import { Heart, MessageCircle, MoreHorizontal } from 'lucide-react'
 import { getInitials, formatDate } from '@/lib/helpers'
 import { useState } from 'react'
 import { commentService } from '@/services/commentService'
 
-function CommentItem({ comment, onDelete, currentUserId }) {
+function CommentItem({ comment, onDelete, onReply, currentUserId }) {
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isLiked, setIsLiked] = useState(comment?.is_liked || false)
+  const [likesCount, setLikesCount] = useState(comment?.likes_count || 0)
+  const [isLiking, setIsLiking] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
 
   const handleDelete = async () => {
@@ -21,6 +24,22 @@ function CommentItem({ comment, onDelete, currentUserId }) {
     } finally {
       setIsDeleting(false)
       setShowMenu(false)
+    }
+  }
+
+  const handleLike = async () => {
+    if (isLiking) return
+    
+    try {
+      setIsLiking(true)
+      // Assuming there's a like endpoint for comments
+      // For now, we'll just toggle locally
+      setIsLiked(!isLiked)
+      setLikesCount(isLiked ? likesCount - 1 : likesCount + 1)
+    } catch (error) {
+      console.error('Like comment error:', error)
+    } finally {
+      setIsLiking(false)
     }
   }
 
@@ -44,7 +63,7 @@ function CommentItem({ comment, onDelete, currentUserId }) {
         <div className="comment-header">
           <div className="comment-user">
             <strong>{comment.user?.name || 'Unknown User'}</strong>
-            <span>{comment.user?.username || 'user'}</span>
+            <span>@{comment.user?.username || 'user'}</span>
             <span>·</span>
             <span>{formatDate(comment.created_at)}</span>
           </div>
@@ -77,6 +96,27 @@ function CommentItem({ comment, onDelete, currentUserId }) {
         </div>
 
         <p className="comment-text">{comment.content}</p>
+
+        <div className="comment-actions">
+          <button 
+            type="button"
+            onClick={handleLike}
+            disabled={isLiking}
+            className={isLiked ? 'liked' : ''}
+            aria-label={isLiked ? 'Unlike comment' : 'Like comment'}
+          >
+            <Heart size={16} fill={isLiked ? 'currentColor' : 'none'} />
+            {likesCount > 0 && <span>{likesCount}</span>}
+          </button>
+
+          <button 
+            type="button"
+            onClick={() => onReply && onReply(comment)}
+            aria-label="Reply to comment"
+          >
+            <MessageCircle size={16} />
+          </button>
+        </div>
       </div>
     </article>
   )
