@@ -340,7 +340,7 @@
   outline: 0;
   background: transparent;
   color: var(--fliq-ink);
-  font: 16px/1.5 var(--fliq-font);
+  font: 20px/1.5 var(--fliq-font);
   transition: opacity 160ms ease;
 }
 
@@ -796,9 +796,14 @@
    Shared Media Style
 ========================= */
 
-.post-media img,
-.post-media video {
+.post-media img{
   width: 100%;
+  display: block;
+  border-radius: 16px;
+  background: var(--fliq-soft);
+}
+.post-media video {
+  /* width: 100%; */
   display: block;
   border-radius: 16px;
   background: var(--fliq-soft);
