@@ -1,9 +1,9 @@
 import { Heart, MessageCircle, Repeat2, Send, Loader2 } from 'lucide-react'
 import { getMediaUrl, formatDate } from '@/lib/helpers'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { postService } from '@/services/postService'
-import CommentList from './CommentList'
-import CommentForm from './CommentForm'
+import CommentModal from './CommentModal'
 
 function LoadingPlaceholder() {
   return (
@@ -15,12 +15,12 @@ function LoadingPlaceholder() {
 }
 
 function PostCard({ post }) {
+  const navigate = useNavigate()
   const [isLiked, setIsLiked] = useState(post?.is_liked || false)
   const [likesCount, setLikesCount] = useState(post?.likes_count || post?.likes || 0)
   const [isLiking, setIsLiking] = useState(false)
-  const [showComments, setShowComments] = useState(false)
   const [commentsCount, setCommentsCount] = useState(post?.comments_count || 0)
-  const [replyTo, setReplyTo] = useState(null)
+  const [showCommentModal, setShowCommentModal] = useState(false)
 
   const mediaCount = post?.media?.length || 0
   const getMediaClass = () => {
@@ -50,24 +50,17 @@ function PostCard({ post }) {
     }
   }
 
-  const handleCommentClick = () => {
-    setShowComments(!showComments)
+  const handleCommentClick = (e) => {
+    e.stopPropagation()
+    setShowCommentModal(true)
   }
 
-  const handleCommentCountChange = (newCount) => {
-    setCommentsCount(newCount)
-  }
-
-  const handleReply = (comment) => {
-    setReplyTo(comment)
-  }
-
-  const handleCancelReply = () => {
-    setReplyTo(null)
+  const handlePostClick = () => {
+    navigate(`/post/${post.uuid || post.id}`)
   }
 
   return (
-    <article className="post-card">
+    <article className="post-card" onClick={handlePostClick}>
 
       {/* USER */}
       <div className="avatar avatar-green">
@@ -88,11 +81,11 @@ function PostCard({ post }) {
         </header>
 
         {/* CONTENT */}
-        <p>{post?.content}</p>
+        <p className="post-content-text">{post?.content}</p>
 
         {/* MEDIA */}
         {post?.media?.length > 0 && (
-          <div className={`post-media ${getMediaClass()}`}>
+          <div className={`post-media ${getMediaClass()}`} onClick={(e) => e.stopPropagation()}>
             {post.media.map((m) => {
               if (m.status !== 'completed') {
                 return <LoadingPlaceholder key={m.id} />
@@ -101,18 +94,17 @@ function PostCard({ post }) {
               return m.file_type === 'image' ? (
                 <img key={m.id} src={getMediaUrl(m.file_path)} alt="" />
               ) : (
-                <video key={m.id} src={getMediaUrl(m.file_path)} controls autoPlay />
+                <video key={m.id} src={getMediaUrl(m.file_path)} controls />
               )
             })}
           </div>
         )}
 
         {/* ACTIONS */}
-        <div className="post-actions">
+        <div className="post-actions" onClick={(e) => e.stopPropagation()}>
           <button 
             type="button"
             onClick={handleCommentClick}
-            className={showComments ? 'active' : ''}
           >
             <MessageCircle size={18} /> {commentsCount}
           </button>
@@ -141,26 +133,12 @@ function PostCard({ post }) {
           </button>
         </div>
 
-        {/* COMMENTS SECTION */}
-        {showComments && (
-          <>
-            <CommentList
-              postUuid={post.uuid || post.id}
-              isOpen={showComments}
-              onCommentCountChange={handleCommentCountChange}
-              onReply={handleReply}
-            />
-            <CommentForm
-              postUuid={post.uuid || post.id}
-              replyTo={replyTo}
-              onCancelReply={handleCancelReply}
-              onCommentAdded={(newComment) => {
-                handleCommentCountChange(commentsCount + 1)
-                setReplyTo(null)
-              }}
-            />
-          </>
-        )}
+        {/* COMMENT MODAL */}
+        <CommentModal
+          isOpen={showCommentModal}
+          onClose={() => setShowCommentModal(false)}
+          postUuid={post.uuid || post.id}
+        />
 
       </div>
     </article>

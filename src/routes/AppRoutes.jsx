@@ -9,6 +9,7 @@ import { ROUTES } from '@/lib/constants'
 
 // Lazy load pages
 const FeedPage = lazy(() => import('@/features/feed/pages/FeedPage'))
+const PostDetailPage = lazy(() => import('@/features/feed/pages/PostDetailPage'))
 const ProfilePage = lazy(() => import('@/features/profile/pages/ProfilePage'))
 const AccountSettingsPage = lazy(() => import('@/features/settings/pages/AccountSettingsPage'))
 const DisplayModePage = lazy(() => import('@/features/settings/pages/DisplayModePage'))
@@ -25,6 +26,7 @@ function AppRoutes({ theme, onSignOut, onThemeChange }) {
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout theme={theme} onSignOut={onSignOut} />}>
             <Route path={ROUTES.HOME} element={<FeedPage />} />
+            <Route path={ROUTES.POST_DETAIL} element={<PostDetailPage />} />
             <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
             <Route path={ROUTES.SETTINGS_ACCOUNT} element={<AccountSettingsPage />} />
             <Route path={ROUTES.SETTINGS_DISPLAY} element={<DisplayModePage onThemeChange={onThemeChange} theme={theme} />} />

@@ -9,12 +9,14 @@ import { storageService } from '@/services/storageService'
 import { ROUTES } from '@/lib/constants'
 import { useAuth } from '@/context/useAuth'
 import { getInitials } from '@/lib/helpers'
+import PostComposerModal from '@/features/feed/components/PostComposerModal'
 
 function Sidebar({ theme, onSignOut }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [showComposerModal, setShowComposerModal] = useState(false)
   const profileMenuRef = useRef(null)
   const { user } = useAuth()
 
@@ -66,7 +68,13 @@ function Sidebar({ theme, onSignOut }) {
     }
   }
 
+  const handleCreatePost = (e) => {
+    e.preventDefault()
+    setShowComposerModal(true)
+  }
+
   return (
+    <>
     <aside className="sidebar">
       <BrandLockup theme={theme} />
       <nav className="nav-list" aria-label="Primary navigation">
@@ -98,7 +106,7 @@ function Sidebar({ theme, onSignOut }) {
           )
         })}
       </nav>
-      <button className="post-button" type="button">
+      <button className="post-button" type="button" onClick={handleCreatePost}>
         <PenLine size={19} />
         <span>Post</span>
       </button>
@@ -221,7 +229,13 @@ function Sidebar({ theme, onSignOut }) {
         </div>
         {location.pathname !== ROUTES.HOME && <span className="profile-current-dot" aria-hidden="true" />}
       </div>
+
     </aside>
+    <PostComposerModal
+      isOpen={showComposerModal}
+      onClose={() => setShowComposerModal(false)}
+    />
+    </>
   )
 }
 

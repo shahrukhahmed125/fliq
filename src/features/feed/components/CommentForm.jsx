@@ -2,6 +2,7 @@ import { Send, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { commentService } from '@/services/commentService'
 import { useAuth } from '@/context/useAuth'
+import { X } from 'lucide-react'
 
 function CommentForm({ postUuid, onCommentAdded, replyTo = null, onCancelReply }) {
   const [text, setText] = useState('')
@@ -58,7 +59,7 @@ function CommentForm({ postUuid, onCommentAdded, replyTo = null, onCancelReply }
                 onClick={onCancelReply}
                 className="cancel-reply"
               >
-                ✕
+                <X size={16} />
               </button>
             </div>
           )}
