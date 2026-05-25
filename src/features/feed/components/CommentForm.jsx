@@ -38,17 +38,6 @@ function CommentForm({ postUuid, onCommentAdded, replyTo = null, onCancelReply }
   return (
     <form className="comment-form" onSubmit={handleSubmit}>
       <div className="comment-form-input-wrapper">
-        <div className="comment-form-avatar">
-          {user?.profile_photo ? (
-            <img
-              src={user.profile_photo}
-              alt="profile"
-              className="avatar-img"
-            />
-          ) : (
-            <span>{user?.name?.slice(0, 1) || 'U'}</span>
-          )}
-        </div>
 
         <div className="comment-form-content">
           {replyTo && (
