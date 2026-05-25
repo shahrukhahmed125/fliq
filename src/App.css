@@ -2794,6 +2794,23 @@
   color: var(--fliq-ink);
 }
 
+.composer-replying-to {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.composer-replying-to span {
+  color: var(--fliq-accent-strong);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .comment-textarea {
   width: 100%;
   min-height: 40px;

@@ -2,9 +2,12 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Heart, MessageCircle, Repeat2, Send, Loader2 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { postService } from '@/services/postService'
+import { commentService } from '@/services/commentService'
 import { getMediaUrl, formatDate } from '@/lib/helpers'
-import CommentList from '../components/CommentList'
-import CommentForm from '../components/CommentForm'
+import PostCard from '../components/PostCard'
+import Composer from '../components/Composer'
+import { useAuth } from '@/context/useAuth'
+import { getInitials } from '@/lib/helpers'
 
 function LoadingPlaceholder() {
   return (
@@ -18,7 +21,9 @@ function LoadingPlaceholder() {
 function PostDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [post, setPost] = useState(null)
+  const [comments, setComments] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [isLiked, setIsLiked] = useState(false)
   const [likesCount, setLikesCount] = useState(0)
@@ -38,10 +43,20 @@ function PostDetailPage() {
       setIsLiked(data?.is_liked || false)
       setLikesCount(data?.likes_count || data?.likes || 0)
       setCommentsCount(data?.comments_count || 0)
+      fetchComments()
     } catch (error) {
       console.error('Fetch post error:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchComments = async () => {
+    try {
+      const data = await commentService.getComments(id)
+      setComments(data)
+    } catch (error) {
+      console.error('Fetch comments error:', error)
     }
   }
 
@@ -76,8 +91,14 @@ function PostDetailPage() {
   }
 
   const handleCommentAdded = (newComment) => {
+    setComments((prev) => [newComment, ...prev])
     handleCommentCountChange(commentsCount + 1)
     setReplyTo(null)
+  }
+
+  const handleDeleteComment = (commentUuid) => {
+    setComments((prev) => prev.filter((c) => c.uuid !== commentUuid))
+    handleCommentCountChange(commentsCount - 1)
   }
 
   const mediaCount = post?.media?.length || 0
@@ -208,21 +229,29 @@ function PostDetailPage() {
           </div>
         </article>
         <div className="post-detail-comment-form">
-          <CommentForm
+          <Composer 
             postUuid={post.uuid || post.id}
-            replyTo={replyTo}
-            onCancelReply={handleCancelReply}
-            onCommentAdded={handleCommentAdded}
+            onCommentSuccess={handleCommentAdded}
+            compact={true}
           />
         </div>
 
         <div className="post-detail-comments">
-          <CommentList
-            postUuid={post.uuid || post.id}
-            isOpen={true}
-            onCommentCountChange={handleCommentCountChange}
-            onReply={handleReply}
-          />
+          {comments.length === 0 ? (
+            <div className="comments-empty">
+              <p>No comments yet. Be the first to comment!</p>
+            </div>
+          ) : (
+            comments.map((comment) => (
+              <PostCard
+                key={comment.uuid || comment.id}
+                post={comment}
+                isComment={true}
+                onDelete={handleDeleteComment}
+                onReply={handleReply}
+              />
+            ))
+          )}
         </div>
 
       </div>

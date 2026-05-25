@@ -1,9 +1,11 @@
-import { Heart, MessageCircle, Repeat2, Send, Loader2 } from 'lucide-react'
+import { Heart, MessageCircle, Repeat2, Send, Loader2, MoreHorizontal } from 'lucide-react'
 import { getMediaUrl, formatDate } from '@/lib/helpers'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { postService } from '@/services/postService'
+import { commentService } from '@/services/commentService'
 import CommentModal from './CommentModal'
+import { useAuth } from '@/context/useAuth'
 
 function LoadingPlaceholder() {
   return (
@@ -14,13 +16,16 @@ function LoadingPlaceholder() {
   )
 }
 
-function PostCard({ post }) {
+function PostCard({ post, isComment = false, onDelete = null, onReply = null }) {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [isLiked, setIsLiked] = useState(post?.is_liked || false)
   const [likesCount, setLikesCount] = useState(post?.likes_count || post?.likes || 0)
   const [isLiking, setIsLiking] = useState(false)
   const [commentsCount, setCommentsCount] = useState(post?.comments_count || 0)
   const [showCommentModal, setShowCommentModal] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const mediaCount = post?.media?.length || 0
   const getMediaClass = () => {
@@ -36,12 +41,19 @@ function PostCard({ post }) {
     
     try {
       setIsLiking(true)
-      const response = await postService.toggleLike(post.uuid || post.id)
       
-      // Update state based on response
-      if (response) {
-        setIsLiked(response.is_liked !== undefined ? response.is_liked : !isLiked)
-        setLikesCount(response.likes_count !== undefined ? response.likes_count : (isLiked ? likesCount - 1 : likesCount + 1))
+      if (isComment) {
+        // Use comment service for comments
+        setIsLiked(!isLiked)
+        setLikesCount(isLiked ? likesCount - 1 : likesCount + 1)
+      } else {
+        // Use post service for posts
+        const response = await postService.toggleLike(post.uuid || post.id)
+        
+        if (response) {
+          setIsLiked(response.is_liked !== undefined ? response.is_liked : !isLiked)
+          setLikesCount(response.likes_count !== undefined ? response.likes_count : (isLiked ? likesCount - 1 : likesCount + 1))
+        }
       }
     } catch (error) {
       console.error('Like error:', error)
@@ -50,21 +62,57 @@ function PostCard({ post }) {
     }
   }
 
+  const handleDelete = async () => {
+    if (isDeleting) return
+    
+    try {
+      setIsDeleting(true)
+      await commentService.deleteComment(post.uuid)
+      if (onDelete) {
+        onDelete(post.uuid)
+      }
+    } catch (error) {
+      console.error('Delete error:', error)
+    } finally {
+      setIsDeleting(false)
+      setShowMenu(false)
+    }
+  }
+
   const handleCommentClick = (e) => {
     e.stopPropagation()
     setShowCommentModal(true)
   }
 
-  const handlePostClick = () => {
-    navigate(`/post/${post.uuid || post.id}`)
+  const handleReplyClick = (e) => {
+    e.stopPropagation()
+    if (onReply) {
+      onReply(post)
+    }
   }
+
+  const handlePostClick = () => {
+    if (!isComment) {
+      navigate(`/post/${post.uuid || post.id}`)
+    }
+  }
+
+  const canDelete = isComment && user?.id === post.user?.id
 
   return (
     <article className="post-card" onClick={handlePostClick}>
 
       {/* USER */}
       <div className="avatar avatar-green">
-        {post?.user?.name?.slice(0, 1) || 'U'}
+        {post?.user?.profile_photo ? (
+          <img
+            src={post.user.profile_photo}
+            alt="profile"
+            className="avatar-img"
+          />
+        ) : (
+          post?.user?.name?.slice(0, 1) || 'U'
+        )}
       </div>
 
       <div className="post-content">
@@ -78,6 +126,32 @@ function PostCard({ post }) {
               {formatDate(post?.created_at) || 'Unknown Date'}
             </span>
           </div>
+
+          {canDelete && (
+            <div className="comment-menu">
+              <button
+                type="button"
+                className="icon-button"
+                onClick={() => setShowMenu(!showMenu)}
+                aria-label="More options"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+
+              {showMenu && (
+                <div className="comment-dropdown">
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="danger-menu-item"
+                  >
+                    {isDeleting ? 'Deleting...' : 'Delete'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </header>
 
         {/* CONTENT */}
@@ -104,9 +178,11 @@ function PostCard({ post }) {
         <div className="post-actions" onClick={(e) => e.stopPropagation()}>
           <button 
             type="button"
-            onClick={handleCommentClick}
+            onClick={isComment ? handleReplyClick : handleCommentClick}
+            aria-label={isComment ? 'Reply' : 'Comment'}
           >
-            <MessageCircle size={18} /> {commentsCount}
+            <MessageCircle size={18} />
+            {!isComment && commentsCount > 0 && <span>{commentsCount}</span>}
           </button>
 
           <button type="button">
@@ -118,14 +194,14 @@ function PostCard({ post }) {
             onClick={handleLike}
             disabled={isLiking}
             className={isLiked ? 'liked' : ''}
-            aria-label={isLiked ? 'Unlike post' : 'Like post'}
+            aria-label={isLiked ? 'Unlike' : 'Like'}
           >
             {isLiking ? (
               <Loader2 className="spinner" size={18} />
             ) : (
               <Heart size={18} fill={isLiked ? 'currentColor' : 'none'} />
             )}
-            {likesCount}
+            {likesCount > 0 && <span>{likesCount}</span>}
           </button>
 
           <button type="button">
@@ -134,11 +210,13 @@ function PostCard({ post }) {
         </div>
 
         {/* COMMENT MODAL */}
-        <CommentModal
-          isOpen={showCommentModal}
-          onClose={() => setShowCommentModal(false)}
-          postUuid={post.uuid || post.id}
-        />
+        {!isComment && (
+          <CommentModal
+            isOpen={showCommentModal}
+            onClose={() => setShowCommentModal(false)}
+            postUuid={post.uuid || post.id}
+          />
+        )}
 
       </div>
     </article>

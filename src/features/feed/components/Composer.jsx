@@ -3,8 +3,9 @@ import { useAuth } from '@/context/useAuth'
 import { getInitials } from '@/lib/helpers'
 import { useState, useRef } from 'react'
 import { postService } from '@/services/postService'
+import { commentService } from '@/services/commentService'
 
-function Composer({ compact = false, onPostSuccess }) {
+function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSuccess = null }) {
   const [text, setText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -19,6 +20,8 @@ function Composer({ compact = false, onPostSuccess }) {
   const videoInputRef = useRef(null)
   const { user } = useAuth()
 
+  const isCommentMode = !!postUuid
+
   const handlePost = async (e) => {
     e.preventDefault()
     if (!text.trim() && images.length === 0 && videos.length === 0) return
@@ -28,44 +31,64 @@ function Composer({ compact = false, onPostSuccess }) {
       setShowUploadProgress(true)
       setUploadProgress(0)
 
-      const formData = new FormData()
-      formData.append('content', text)
-      images.forEach((image) => {
-        formData.append('media[]', image)
-      })
-      videos.forEach((video) => {
-        formData.append('media[]', video)
-      })
-      topics.forEach((topic) => {
-        formData.append('topics[]', topic)
-      })
-
-      const response = await postService.createPost(formData, (progress) => {
-        setUploadProgress(progress)
-      })
-      console.log('POST RESPONSE:', response)
-
-      // Show success animation briefly, then clear immediately
-      setShowSuccess(true)
-      setShowUploadProgress(false)
-      
-      setTimeout(() => {
-        setText('')
-        setImages([])
-        setVideos([])
-        setTopics([])
-        setTopicInput('')
-        setShowSuccess(false)
-        setUploadProgress(0)
+      if (isCommentMode) {
+        // Comment mode - use comment API
+        const response = await commentService.createComment({
+          post_uuid: postUuid,
+          content: text.trim(),
+        })
         
-        // Notify parent to refresh feed immediately
-        if (onPostSuccess) {
-          onPostSuccess(response.data)
-        }
-      }, 200)
+        setShowSuccess(true)
+        setShowUploadProgress(false)
+        
+        setTimeout(() => {
+          setText('')
+          setShowSuccess(false)
+          setUploadProgress(0)
+          
+          if (onCommentSuccess) {
+            onCommentSuccess(response)
+          }
+        }, 200)
+      } else {
+        // Post mode - use post API with media and topics
+        const formData = new FormData()
+        formData.append('content', text)
+        images.forEach((image) => {
+          formData.append('media[]', image)
+        })
+        videos.forEach((video) => {
+          formData.append('media[]', video)
+        })
+        topics.forEach((topic) => {
+          formData.append('topics[]', topic)
+        })
+
+        const response = await postService.createPost(formData, (progress) => {
+          setUploadProgress(progress)
+        })
+        console.log('POST RESPONSE:', response)
+
+        setShowSuccess(true)
+        setShowUploadProgress(false)
+        
+        setTimeout(() => {
+          setText('')
+          setImages([])
+          setVideos([])
+          setTopics([])
+          setTopicInput('')
+          setShowSuccess(false)
+          setUploadProgress(0)
+          
+          if (onPostSuccess) {
+            onPostSuccess(response.data)
+          }
+        }, 200)
+      }
 
     } catch (error) {
-      console.log('POST ERROR:', error.response?.data || error)
+      console.log(isCommentMode ? 'COMMENT ERROR:' : 'POST ERROR:', error.response?.data || error)
       setShowUploadProgress(false)
       setUploadProgress(0)
     } finally {
@@ -116,7 +139,7 @@ function Composer({ compact = false, onPostSuccess }) {
   }
 
   return (
-    <section className={compact ? 'composer compact-composer' : 'composer'} aria-label="Create post">
+    <section className={compact ? 'composer compact-composer' : 'composer'} aria-label={isCommentMode ? "Reply to post" : "Create post"}>
       <div className="avatar avatar-green">  {user?.profile_photo ? (
         <img
             src={user.profile_photo}
@@ -142,7 +165,7 @@ function Composer({ compact = false, onPostSuccess }) {
         )}
         <form className="composer-form" onSubmit={handlePost}>
           <textarea
-            placeholder="What's in your mind today?"
+            placeholder={isCommentMode ? "Write a reply..." : "What's in your mind today?"}
             rows={compact ? 2 : 3}
             name='content'
             value={text}
@@ -227,54 +250,57 @@ function Composer({ compact = false, onPostSuccess }) {
               </button>
             </div>
           )}
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                style={{ display: 'none' }}
+                onChange={handleImageChange}
+              />
 
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            multiple
-            style={{ display: 'none' }}
-            onChange={handleImageChange}
-          />
-
-          <input
-            ref={videoInputRef}
-            type="file"
-            accept="video/*"
-            multiple
-            style={{ display: 'none' }}
-            onChange={handleVideoChange}
-          />
+              <input
+                ref={videoInputRef}
+                type="file"
+                accept="video/*"
+                multiple
+                style={{ display: 'none' }}
+                onChange={handleVideoChange}
+              />
+            </>
 
           <div className="composer-actions">
             <div className="composer-tools">
-              <button type="button" aria-label="Add image" onClick={handleImageClick} disabled={isLoading || showSuccess}>
-                <Image size={18} />
-              </button>
-              <button type="button" aria-label="Add video" onClick={handleVideoClick} disabled={isLoading || showSuccess}>
-                <Video size={18} />
-              </button>
-              <button type="button" aria-label="Add topic" onClick={handleTopicClick} disabled={isLoading || showSuccess}>
-                <Hash size={18} />
-              </button>
+                <>
+                  <button type="button" aria-label="Add image" onClick={handleImageClick} disabled={isLoading || showSuccess}>
+                    <Image size={18} />
+                  </button>
+                  <button type="button" aria-label="Add video" onClick={handleVideoClick} disabled={isLoading || showSuccess}>
+                    <Video size={18} />
+                  </button>
+                  <button type="button" aria-label="Add topic" onClick={handleTopicClick} disabled={isLoading || showSuccess}>
+                    <Hash size={18} />
+                  </button>
+                </>
             </div>
             <button 
               className={`primary-action ${showSuccess ? 'success' : ''}`} 
               type="submit" 
-              disabled={isLoading || showSuccess}
+              disabled={isLoading || showSuccess || (!isCommentMode && !text.trim() && images.length === 0 && videos.length === 0) || (isCommentMode && !text.trim())}
             >
               {showSuccess ? (
                 <>
                   <Check className="check-icon" size={16} />
-                  Posted!
+                  {isCommentMode ? 'Replied!' : 'Posted!'}
                 </>
               ) : isLoading ? (
                 <>
                   <Loader2 className="spinner" size={16} />
-                  Posting...
+                  {isCommentMode ? 'Replying...' : 'Posting...'}
                 </>
               ) : (
-                'Post'
+                isCommentMode ? 'Reply' : 'Post'
               )}
             </button>
           </div>

@@ -2,7 +2,7 @@ import { X } from 'lucide-react'
 import { useEffect } from 'react'
 import Composer from './Composer'
 
-function PostComposerModal({ isOpen, onClose, onPostSuccess }) {
+function PostComposerModal({ isOpen, onClose, onPostSuccess, title = 'New post', postUuid = null, onCommentAdded = null }) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -24,12 +24,19 @@ function PostComposerModal({ isOpen, onClose, onPostSuccess }) {
     onClose()
   }
 
+  const handleCommentSuccess = (commentData) => {
+    if (onCommentAdded) {
+      onCommentAdded(commentData)
+    }
+    onClose()
+  }
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-backdrop" onClick={(e) => e.stopPropagation()}>
         <div className="modal-container">
           <div className="modal-header">
-            <h2>New post</h2>
+            <h2>{title}</h2>
             <button 
               type="button"
               onClick={onClose}
@@ -42,7 +49,11 @@ function PostComposerModal({ isOpen, onClose, onPostSuccess }) {
 
           <div className="modal-content">
             <div className="modal-composer-full">
-              <Composer onPostSuccess={handlePostSuccess} />
+              <Composer 
+                onPostSuccess={handlePostSuccess}
+                postUuid={postUuid}
+                onCommentSuccess={handleCommentSuccess}
+              />
             </div>
           </div>
         </div>
