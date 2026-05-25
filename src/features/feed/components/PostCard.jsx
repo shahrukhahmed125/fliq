@@ -25,6 +25,7 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
   const [showCommentModal, setShowCommentModal] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const isRepost = !!post.reposted_post;
   const [isReposted, setIsReposted] = useState(post?.is_reposted || false)
   const [repostsCount, setRepostsCount] = useState(post?.reposts_count || post?.reposts || 0)
   const [isReposting, setIsReposting] = useState(false)
@@ -175,7 +176,58 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
         </header>
 
         {/* CONTENT */}
-        <p className="post-content-text">{post?.content}</p>
+        {isRepost ? (
+          <div className="repost-content">
+            <div className="repost-indicator">
+              <Repeat2 size={16} />
+              <span>Reposted</span>
+            </div>
+            <div className="repost-original-post">
+              <div className="repost-original-header">
+                <div className="avatar avatar-green">
+                  {post?.reposted_post?.user?.profile_photo ? (
+                    <img
+                      src={post.reposted_post.user.profile_photo}
+                      alt="profile"
+                      className="avatar-img"
+                    />
+                  ) : (
+                    post?.reposted_post?.user?.name?.slice(0, 1) || 'U'
+                  )}
+                </div>
+                <div>
+                  <strong>{post?.reposted_post?.user?.name || 'Unknown User'}</strong>
+                  <span>
+                    {post?.reposted_post?.user?.username || 'user'} ·
+                    {formatDate(post?.reposted_post?.created_at) || 'Unknown Date'}
+                  </span>
+                </div>
+              </div>
+              <p>{post?.reposted_post?.content}</p>
+              {post?.reposted_post?.media?.length > 0 && (
+                <div className={`post-media ${getMediaClass()}`}>
+                  {post.reposted_post.media.map((m) => {
+                    if (m.status !== 'completed') {
+                      return <LoadingPlaceholder key={m.id} />
+                    }
+                    return m.file_type === 'image' ? (
+                      <img
+                        key={m.id}
+                        src={getMediaUrl(m.file_path)}
+                        alt="Post media"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <video key={m.id} controls src={getMediaUrl(m.file_path)} />
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p className="post-content-text">{post?.content}</p>
+        )}
 
         {/* MEDIA */}
         {post?.media?.length > 0 && (
