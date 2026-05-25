@@ -48,15 +48,24 @@ export const postService = {
     return response.data?.data || response.data
   },
 
-  getComments: async (postId) => {
-    const response = await api.get(`/posts/${postId}/comments`)
-    console.log('GET COMMENTS RESPONSE:', response.data)
+  getReplies: async (postId) => {
+    const response = await api.get(`/posts/${postId}/replies`)
+    console.log('GET REPLIES RESPONSE:', response.data)
+    // Handle Laravel API response structure: { status, message, data: [...] }
+    const replies = response.data?.data || response.data || []
+    return Array.isArray(replies) ? replies : []
+  },
+
+  createReply: async (replyData) => {
+    const response = await api.post('/posts/store', replyData)
+    console.log('CREATE REPLY RESPONSE:', response.data)
+    // Handle Laravel API response structure: { status, message, data: {...} }
     return response.data?.data || response.data
   },
 
-  createComment: async (postId, commentData) => {
-    const response = await api.post(`/posts/${postId}/comments`, commentData)
-    console.log('CREATE COMMENT RESPONSE:', response.data)
-    return response.data?.data || response.data
+  deleteReply: async (id) => {
+    const response = await api.delete(`/posts/delete/${id}`)
+    console.log('DELETE REPLY RESPONSE:', response.data)
+    return response.data
   },
 }

@@ -3,7 +3,6 @@ import { useAuth } from '@/context/useAuth'
 import { getInitials } from '@/lib/helpers'
 import { useState, useRef } from 'react'
 import { postService } from '@/services/postService'
-import { commentService } from '@/services/commentService'
 
 function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSuccess = null, replyTo = null }) {
   const [text, setText] = useState('')
@@ -32,12 +31,12 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
       setUploadProgress(0)
 
       if (isCommentMode) {
-        // Comment mode - use comment API
-        const response = await commentService.createComment({
-          post_uuid: postUuid,
-          content: text.trim(),
-          parent_id: replyTo?.uuid || replyTo?.id || null,
-        })
+        // Reply mode - use post API with parent_id
+        const formData = new FormData()
+        formData.append('content', text)
+        formData.append('parent_id', replyTo?.uuid || replyTo?.id || postUuid)
+        
+        const response = await postService.createReply(formData)
         
         setShowSuccess(true)
         setShowUploadProgress(false)

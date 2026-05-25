@@ -3,7 +3,6 @@ import { getMediaUrl, formatDate } from '@/lib/helpers'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { postService } from '@/services/postService'
-import { commentService } from '@/services/commentService'
 import CommentModal from './CommentModal'
 import { useAuth } from '@/context/useAuth'
 
@@ -67,9 +66,9 @@ function PostCard({ post, isComment = false, onDelete = null, onReply = null }) 
     
     try {
       setIsDeleting(true)
-      await commentService.deleteComment(post.uuid)
+      await postService.deleteReply(post.uuid || post.id)
       if (onDelete) {
-        onDelete(post.uuid)
+        onDelete(post.uuid || post.id)
       }
     } catch (error) {
       console.error('Delete error:', error)

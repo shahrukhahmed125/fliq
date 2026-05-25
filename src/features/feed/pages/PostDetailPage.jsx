@@ -2,7 +2,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Heart, MessageCircle, Repeat2, Send, Loader2 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { postService } from '@/services/postService'
-import { commentService } from '@/services/commentService'
 import { getMediaUrl, formatDate } from '@/lib/helpers'
 import PostCard from '../components/PostCard'
 import Composer from '../components/Composer'
@@ -53,10 +52,10 @@ function PostDetailPage() {
 
   const fetchComments = async () => {
     try {
-      const data = await commentService.getComments(id)
+      const data = await postService.getReplies(id)
       setComments(data)
     } catch (error) {
-      console.error('Fetch comments error:', error)
+      console.error('Fetch replies error:', error)
     }
   }
 
@@ -204,7 +203,7 @@ function PostDetailPage() {
       <div className="post-detail-content">
         <article className="post-card post-detail-card">
           <div className="avatar avatar-green">
-            {post?.user?.name?.slice(0, 1) || 'U'}
+            {getInitials(post?.user?.name)}
           </div>
 
           <div className="post-content">
@@ -212,7 +211,7 @@ function PostDetailPage() {
               <div>
                 <strong>{post?.user?.name || 'Unknown User'}</strong>
                 <span>
-                  @{post?.user?.username || 'user'} ·
+                  {post?.user?.username || 'user'} ·
                   {formatDate(post?.created_at) || 'Unknown Date'}
                 </span>
               </div>
