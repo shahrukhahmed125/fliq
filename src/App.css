@@ -755,6 +755,14 @@
   color: #dc2626;
 }
 
+.post-actions button.reposted {
+  color: #10b981;
+}
+
+.post-actions button.reposted:hover {
+  color: #059669;
+}
+
 /* =========================
    Post Media Container
 ========================= */

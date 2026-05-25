@@ -68,4 +68,11 @@ export const postService = {
     console.log('DELETE REPLY RESPONSE:', response.data)
     return response.data
   },
+
+  createRepost: async (repostData) => {
+    const response = await api.post('/posts/store', repostData)
+    console.log('CREATE REPOST RESPONSE:', response.data)
+    // Handle Laravel API response structure: { status, message, data: {...} }
+    return response.data?.data || response.data
+  },
 }

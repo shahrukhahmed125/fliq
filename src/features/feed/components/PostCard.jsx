@@ -15,7 +15,7 @@ function LoadingPlaceholder() {
   )
 }
 
-function PostCard({ post, isComment = false, onDelete = null, onReply = null }) {
+function PostCard({ post, isComment = false, onDelete = null, postUuid = null, onReply = null, repostOf=null }) {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [isLiked, setIsLiked] = useState(post?.is_liked || false)
@@ -25,6 +25,9 @@ function PostCard({ post, isComment = false, onDelete = null, onReply = null }) 
   const [showCommentModal, setShowCommentModal] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isReposted, setIsReposted] = useState(post?.is_reposted || false)
+  const [repostsCount, setRepostsCount] = useState(post?.reposts_count || post?.reposts || 0)
+  const [isReposting, setIsReposting] = useState(false)
 
   const mediaCount = post?.media?.length || 0
   const getMediaClass = () => {
@@ -41,11 +44,6 @@ function PostCard({ post, isComment = false, onDelete = null, onReply = null }) 
     try {
       setIsLiking(true)
       
-      if (isComment) {
-        // Use comment service for comments
-        setIsLiked(!isLiked)
-        setLikesCount(isLiked ? likesCount - 1 : likesCount + 1)
-      } else {
         // Use post service for posts
         const response = await postService.toggleLike(post.uuid || post.id)
         
@@ -53,12 +51,35 @@ function PostCard({ post, isComment = false, onDelete = null, onReply = null }) 
           setIsLiked(response.is_liked !== undefined ? response.is_liked : !isLiked)
           setLikesCount(response.likes_count !== undefined ? response.likes_count : (isLiked ? likesCount - 1 : likesCount + 1))
         }
-      }
     } catch (error) {
       console.error('Like error:', error)
     } finally {
       setIsLiking(false)
     }
+  }
+
+  const handleRepost = async () => {
+      if(isReposting) return
+
+      try{
+        setIsReposting(true)
+
+        const formData = new FormData()
+        formData.append('repost_of', post?.uuid || post?.id)
+
+        // use post service
+        const response = await postService.createRepost(formData)
+
+        if (response) {
+          setIsReposted(response.is_reposted !== undefined ? response.is_reposted : !isReposted)
+          setRepostsCount(response.reposts_count !== undefined ? response.reposts_count : (isReposted ? repostsCount - 1 : repostsCount + 1))
+        }
+
+      }catch(error){
+        console.error('Repost error:', error.response?.data || error)
+      }finally{
+        setIsReposting(false)
+      }
   }
 
   const handleDelete = async () => {
@@ -184,8 +205,20 @@ function PostCard({ post, isComment = false, onDelete = null, onReply = null }) 
             {!isComment && commentsCount > 0 && <span>{commentsCount}</span>}
           </button>
 
-          <button type="button">
-            <Repeat2 size={18} /> {post?.reposts_count || 0}
+          <button
+            type="button"
+            onClick={handleRepost}
+            disabled={isReposting}
+            className={isReposted ? 'reposted' : ''}
+            aria-label={isReposted ? 'Undo repost' : 'Repost'}
+          >
+            {isReposting ? (
+              <Loader2 className="spinner" size={18} />
+            ) : (
+              <Repeat2 size={18} />
+            )}
+
+            {post?.reposts_count > 0 && <span>{post.reposts_count}</span>}
           </button>
 
           <button 
