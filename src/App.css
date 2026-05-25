@@ -2570,6 +2570,36 @@
   font-size: 14px;
 }
 
+.comment-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comment-replies {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: 52px;
+  position: relative;
+  padding-left: 16px;
+}
+
+.comment-replies::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--fliq-border);
+  border-radius: 1px;
+}
+
+.comment-reply {
+  position: relative;
+}
+
 .comments-list {
   display: flex;
   flex-direction: column;

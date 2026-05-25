@@ -91,13 +91,51 @@ function PostDetailPage() {
   }
 
   const handleCommentAdded = (newComment) => {
-    setComments((prev) => [newComment, ...prev])
+    if (replyTo) {
+      // If replying to a comment, add it as a nested reply
+      setComments((prev) => {
+        const addNestedReply = (comments) => {
+          return comments.map((comment) => {
+            if (comment.uuid === replyTo.uuid || comment.id === replyTo.id) {
+              return {
+                ...comment,
+                replies: [...(comment.replies || []), newComment]
+              }
+            }
+            if (comment.replies && comment.replies.length > 0) {
+              return {
+                ...comment,
+                replies: addNestedReply(comment.replies)
+              }
+            }
+            return comment
+          })
+        }
+        return addNestedReply(prev)
+      })
+    } else {
+      // Top-level comment
+      setComments((prev) => [newComment, ...prev])
+    }
     handleCommentCountChange(commentsCount + 1)
     setReplyTo(null)
   }
 
   const handleDeleteComment = (commentUuid) => {
-    setComments((prev) => prev.filter((c) => c.uuid !== commentUuid))
+    setComments((prev) => {
+      const removeComment = (comments) => {
+        return comments.filter((comment) => {
+          if (comment.uuid === commentUuid || comment.id === commentUuid) {
+            return false
+          }
+          if (comment.replies && comment.replies.length > 0) {
+            comment.replies = removeComment(comment.replies)
+          }
+          return true
+        })
+      }
+      return removeComment(prev)
+    })
     handleCommentCountChange(commentsCount - 1)
   }
 
@@ -233,6 +271,7 @@ function PostDetailPage() {
             postUuid={post.uuid || post.id}
             onCommentSuccess={handleCommentAdded}
             compact={true}
+            replyTo={replyTo}
           />
         </div>
 
@@ -243,13 +282,28 @@ function PostDetailPage() {
             </div>
           ) : (
             comments.map((comment) => (
-              <PostCard
-                key={comment.uuid || comment.id}
-                post={comment}
-                isComment={true}
-                onDelete={handleDeleteComment}
-                onReply={handleReply}
-              />
+              <div key={comment.uuid || comment.id} className="comment-thread">
+                <PostCard
+                  post={comment}
+                  isComment={true}
+                  onDelete={handleDeleteComment}
+                  onReply={handleReply}
+                />
+                {comment.replies && comment.replies.length > 0 && (
+                  <div className="comment-replies">
+                    {comment.replies.map((reply) => (
+                      <div key={reply.uuid || reply.id} className="comment-reply">
+                        <PostCard
+                          post={reply}
+                          isComment={true}
+                          onDelete={handleDeleteComment}
+                          onReply={handleReply}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))
           )}
         </div>

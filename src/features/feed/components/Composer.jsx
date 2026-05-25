@@ -5,7 +5,7 @@ import { useState, useRef } from 'react'
 import { postService } from '@/services/postService'
 import { commentService } from '@/services/commentService'
 
-function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSuccess = null }) {
+function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSuccess = null, replyTo = null }) {
   const [text, setText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -36,6 +36,7 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
         const response = await commentService.createComment({
           post_uuid: postUuid,
           content: text.trim(),
+          parent_id: replyTo?.uuid || replyTo?.id || null,
         })
         
         setShowSuccess(true)
