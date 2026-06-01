@@ -1,4 +1,7 @@
-import { Heart, MessageCircle, Repeat2, Send, Loader2, MoreHorizontal } from 'lucide-react'
+import { Loader2, MoreHorizontal } from 'lucide-react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShare, faComment, faHeart, faRotate } from '@fortawesome/free-regular-svg-icons';
+import { faShare as faShareSolid, faComment as faCommentSolid, faHeart as faHeartSolid, faRotate as faRotateSolid } from '@fortawesome/free-solid-svg-icons';
 import { getMediaUrl, formatDate } from '@/lib/helpers'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -29,6 +32,7 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
   const [isReposted, setIsReposted] = useState(post?.is_reposted || false)
   const [repostsCount, setRepostsCount] = useState(post?.reposts_count || post?.reposts || 0)
   const [isReposting, setIsReposting] = useState(false)
+  const [hasReplied, setHasReplied] = useState(post?.has_replied || false)
 
   const mediaCount = post?.media?.length || 0
   const getMediaClass = () => {
@@ -179,7 +183,7 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
         {isRepost ? (
           <div className="repost-content">
             <div className="repost-indicator">
-              <Repeat2 size={16} />
+              <FontAwesomeIcon icon={faRotate} size="sm" />
               <span>Reposted</span>
             </div>
             <div className="repost-original-post">
@@ -253,7 +257,7 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
             onClick={isComment ? handleReplyClick : handleCommentClick}
             aria-label={isComment ? 'Reply' : 'Comment'}
           >
-            <MessageCircle size={18} />
+            <FontAwesomeIcon icon={hasReplied ? faCommentSolid : faComment} size="lg" style={{ color: hasReplied ? '#8181f1' : 'inherit' }} />
             {!isComment && commentsCount > 0 && <span>{commentsCount}</span>}
           </button>
 
@@ -267,7 +271,7 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
             {isReposting ? (
               <Loader2 className="spinner" size={18} />
             ) : (
-              <Repeat2 size={18} />
+              <FontAwesomeIcon icon={isReposted ? faRotateSolid : faRotate} size="lg" style={{ color: isReposted ? '#10b981' : 'inherit' }} />
             )}
 
             {post?.reposts_count > 0 && <span>{post.reposts_count}</span>}
@@ -283,13 +287,13 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
             {isLiking ? (
               <Loader2 className="spinner" size={18} />
             ) : (
-              <Heart size={18} fill={isLiked ? 'currentColor' : 'none'} />
+              <FontAwesomeIcon icon={isLiked ? faHeartSolid : faHeart} size="lg" style={{ color: isLiked ? '#ef4444' : 'inherit' }} />
             )}
             {likesCount > 0 && <span>{likesCount}</span>}
           </button>
 
           <button type="button">
-            <Send size={18} />
+            <FontAwesomeIcon icon={faShare} size="lg" className="share-icon" />
           </button>
         </div>
 
