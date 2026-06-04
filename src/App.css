@@ -2576,6 +2576,369 @@
   font-size: 12px;
 }
 
+/* Notifications Page Styles */
+.notifications-page {
+  min-height: 100vh;
+  border-right: 1px solid var(--fliq-border);
+}
+
+.notifications-header {
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  display: flex;
+  align-items: center;
+  min-height: 74px;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--fliq-border);
+  background: color-mix(in srgb, var(--fliq-surface) 88%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+.notifications-header h1 {
+  margin: 0;
+  color: var(--fliq-ink);
+  font-size: 23px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.notifications-filters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--fliq-border);
+}
+
+.notifications-filters button {
+  position: relative;
+  min-height: 48px;
+  border: 0;
+  background: transparent;
+  color: var(--fliq-muted);
+  font-weight: 750;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.notifications-filters button.active {
+  color: var(--fliq-ink);
+}
+
+.notifications-filters button.active::after {
+  content: '';
+  position: absolute;
+  right: 25%;
+  bottom: 0;
+  left: 25%;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: var(--fliq-accent);
+}
+
+.notifications-list {
+  padding: 0;
+}
+
+.notification-item {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 12px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--fliq-border);
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.notification-item:hover {
+  background: var(--fliq-soft);
+}
+
+.notification-item.unread {
+  background: rgba(16, 185, 129, 0.04);
+}
+
+.notification-avatar {
+  position: relative;
+}
+
+.notification-icon-wrapper {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--fliq-card);
+  border: 2px solid var(--fliq-surface);
+}
+
+.notification-icon.like {
+  color: #ef4444;
+}
+
+.notification-icon.mention {
+  color: #8181f1;
+}
+
+.notification-icon.repost {
+  color: #10b981;
+}
+
+.notification-icon.follow {
+  color: var(--fliq-accent);
+}
+
+.notification-content {
+  min-width: 0;
+}
+
+.notification-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.notification-user {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.notification-user strong {
+  color: var(--fliq-ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.notification-username {
+  color: var(--fliq-muted);
+  font-size: 14px;
+}
+
+.notification-action {
+  color: var(--fliq-muted);
+  font-size: 14px;
+}
+
+.notification-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notification-time {
+  color: var(--fliq-muted);
+  font-size: 12px;
+}
+
+.notification-more {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fliq-muted);
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.notification-more:hover {
+  background: var(--fliq-soft);
+  color: var(--fliq-ink);
+}
+
+.notification-post {
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--fliq-hover);
+  border: 1px solid var(--fliq-border);
+}
+
+.notification-post p {
+  margin: 0;
+  color: var(--fliq-ink);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.notification-follow {
+  margin-top: 10px;
+}
+
+.notification-follow .follow-button {
+  min-height: 32px;
+  padding: 0 16px;
+  border: 1px solid var(--fliq-border);
+  border-radius: 999px;
+  background: var(--fliq-accent);
+  color: white;
+  font-weight: 750;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.notification-follow .follow-button:hover {
+  background: var(--fliq-accent-strong);
+}
+
+/* Bookmarks Page Styles */
+.bookmarks-page {
+  min-height: 100vh;
+  border-right: 1px solid var(--fliq-border);
+}
+
+.bookmarks-header {
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 74px;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--fliq-border);
+  background: color-mix(in srgb, var(--fliq-surface) 88%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+.bookmarks-header h1 {
+  margin: 0;
+  color: var(--fliq-ink);
+  font-size: 23px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.bookmarks-subtitle {
+  margin: 0;
+  color: var(--fliq-muted);
+  font-size: 14px;
+}
+
+.bookmarks-search {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--fliq-border);
+}
+
+.bookmarks-search .search-box {
+  width: 100%;
+}
+
+.bookmarks-list {
+  padding: 0;
+}
+
+.bookmarked-post {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--fliq-border);
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.bookmarked-post:hover {
+  background: var(--fliq-soft);
+}
+
+.bookmark-header {
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.bookmark-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bookmark-user-info strong {
+  color: var(--fliq-ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.bookmark-user-info span {
+  color: var(--fliq-muted);
+  font-size: 13px;
+}
+
+.bookmark-remove {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fliq-accent);
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.bookmark-remove:hover {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--fliq-accent-strong);
+}
+
+.bookmark-content {
+  margin: 0;
+  color: var(--fliq-ink);
+  font-size: 15.5px;
+  line-height: 1.55;
+  padding-left: 58px;
+}
+
+.bookmark-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 440px;
+  padding-left: 58px;
+}
+
+.bookmark-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--fliq-muted);
+  font-size: 13px;
+}
+
+.bookmark-actions button.liked {
+  color: #ef4444;
+}
+
+.bookmark-actions button.liked:hover {
+  color: #dc2626;
+}
+
+.bookmark-actions button.reposted {
+  color: #10b981;
+}
+
+.bookmark-actions button.reposted:hover {
+  color: #059669;
+}
+
 .background-pattern {
   position: absolute;
   top: 0;

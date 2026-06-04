@@ -9,6 +9,8 @@ export const ROUTES = {
   POST_DETAIL: '/post/:id',
   MESSAGES: '/messages',
   EXPLORE: '/explore',
+  NOTIFICATIONS: '/notifications',
+  BOOKMARKS: '/bookmarks',
 }
 
 export const THEME_OPTIONS = {

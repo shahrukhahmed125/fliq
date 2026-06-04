@@ -82,7 +82,9 @@ function Sidebar({ theme, onSignOut }) {
           const isActive =
             (label === 'Home' && location.pathname === ROUTES.HOME) ||
             (label === 'Explore' && location.pathname === ROUTES.EXPLORE) ||
+            (label === 'Notifications' && location.pathname === ROUTES.NOTIFICATIONS) ||
             (label === 'Messages' && location.pathname === ROUTES.MESSAGES) ||
+            (label === 'Bookmarks' && location.pathname === ROUTES.BOOKMARKS) ||
             (label === 'Settings' && location.pathname === ROUTES.SETTINGS_ACCOUNT)
 
           return (
@@ -101,9 +103,19 @@ function Sidebar({ theme, onSignOut }) {
                 navigate(ROUTES.EXPLORE)
               }
 
+              if (label === 'Notifications') {
+                event.preventDefault()
+                navigate(ROUTES.NOTIFICATIONS)
+              }
+
               if (label === 'Messages') {
                 event.preventDefault()
                 navigate(ROUTES.MESSAGES)
+              }
+
+              if (label === 'Bookmarks') {
+                event.preventDefault()
+                navigate(ROUTES.BOOKMARKS)
               }
 
               if (label === 'Settings') {

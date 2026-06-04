@@ -15,6 +15,8 @@ const AccountSettingsPage = lazy(() => import('@/features/settings/pages/Account
 const DisplayModePage = lazy(() => import('@/features/settings/pages/DisplayModePage'))
 const MessagesPage = lazy(() => import('@/features/messages/pages/MessagesPage'))
 const ExplorePage = lazy(() => import('@/features/explore/pages/ExplorePage'))
+const NotificationsPage = lazy(() => import('@/features/notifications/pages/NotificationsPage'))
+const BookmarksPage = lazy(() => import('@/features/bookmarks/pages/BookmarksPage'))
 const SignInPage = lazy(() => import('@/features/auth/pages/SignInPage'))
 const SignUpPage = lazy(() => import('@/features/auth/pages/SignUpPage'))
 const ForgotPasswordPage = lazy(() => import('@/features/auth/pages/ForgotPasswordPage'))
@@ -34,6 +36,8 @@ function AppRoutes({ theme, onSignOut, onThemeChange }) {
             <Route path={ROUTES.SETTINGS_DISPLAY} element={<DisplayModePage onThemeChange={onThemeChange} theme={theme} />} />
             <Route path={ROUTES.MESSAGES} element={<MessagesPage />} />
             <Route path={ROUTES.EXPLORE} element={<ExplorePage />} />
+            <Route path={ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
+            <Route path={ROUTES.BOOKMARKS} element={<BookmarksPage />} />
           </Route>
         </Route>
 
