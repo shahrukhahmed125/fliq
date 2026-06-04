@@ -13,6 +13,8 @@ const PostDetailPage = lazy(() => import('@/features/feed/pages/PostDetailPage')
 const ProfilePage = lazy(() => import('@/features/profile/pages/ProfilePage'))
 const AccountSettingsPage = lazy(() => import('@/features/settings/pages/AccountSettingsPage'))
 const DisplayModePage = lazy(() => import('@/features/settings/pages/DisplayModePage'))
+const MessagesPage = lazy(() => import('@/features/messages/pages/MessagesPage'))
+const ExplorePage = lazy(() => import('@/features/explore/pages/ExplorePage'))
 const SignInPage = lazy(() => import('@/features/auth/pages/SignInPage'))
 const SignUpPage = lazy(() => import('@/features/auth/pages/SignUpPage'))
 const ForgotPasswordPage = lazy(() => import('@/features/auth/pages/ForgotPasswordPage'))
@@ -30,6 +32,8 @@ function AppRoutes({ theme, onSignOut, onThemeChange }) {
             <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
             <Route path={ROUTES.SETTINGS_ACCOUNT} element={<AccountSettingsPage />} />
             <Route path={ROUTES.SETTINGS_DISPLAY} element={<DisplayModePage onThemeChange={onThemeChange} theme={theme} />} />
+            <Route path={ROUTES.MESSAGES} element={<MessagesPage />} />
+            <Route path={ROUTES.EXPLORE} element={<ExplorePage />} />
           </Route>
         </Route>
 

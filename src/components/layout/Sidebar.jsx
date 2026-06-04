@@ -81,6 +81,8 @@ function Sidebar({ theme, onSignOut }) {
         {navItems.map(([Icon, label]) => {
           const isActive =
             (label === 'Home' && location.pathname === ROUTES.HOME) ||
+            (label === 'Explore' && location.pathname === ROUTES.EXPLORE) ||
+            (label === 'Messages' && location.pathname === ROUTES.MESSAGES) ||
             (label === 'Settings' && location.pathname === ROUTES.SETTINGS_ACCOUNT)
 
           return (
@@ -92,6 +94,16 @@ function Sidebar({ theme, onSignOut }) {
               if (label === 'Home') {
                 event.preventDefault()
                 navigate(ROUTES.HOME)
+              }
+
+              if (label === 'Explore') {
+                event.preventDefault()
+                navigate(ROUTES.EXPLORE)
+              }
+
+              if (label === 'Messages') {
+                event.preventDefault()
+                navigate(ROUTES.MESSAGES)
               }
 
               if (label === 'Settings') {

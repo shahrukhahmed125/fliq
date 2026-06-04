@@ -7,6 +7,8 @@ export const ROUTES = {
   SETTINGS_ACCOUNT: '/settings/account',
   SETTINGS_DISPLAY: '/settings/display',
   POST_DETAIL: '/post/:id',
+  MESSAGES: '/messages',
+  EXPLORE: '/explore',
 }
 
 export const THEME_OPTIONS = {
