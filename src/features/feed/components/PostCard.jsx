@@ -181,10 +181,6 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
         {/* CONTENT */}
         {isRepost ? (
           <div className="repost-content">
-            <div className="repost-indicator">
-              <FontAwesomeIcon icon={faRotate} size="sm" />
-              <span>Reposted</span>
-            </div>
             <div className="repost-original-post">
               <div className="repost-original-header">
                 <div className="avatar avatar-green">
