@@ -675,14 +675,37 @@
   animation: spin 1s linear infinite;
 }
 
+.post-list{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
 .post-card {
-  display: grid;
-  grid-template-columns: 46px 1fr;
-  gap: 13px;
-  padding: 18px 22px;
-  border-top: 1px solid var(--fliq-border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--fliq-border);
+  border-radius: 16px;
+  background: var(--fliq-bg);
   text-align: left;
   animation: fadeIn 0.4s ease-out;
+  width: 100%;
+}
+
+.post-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.post-card-header .avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
+  flex-shrink: 0;
 }
 
 @keyframes fadeIn {
@@ -694,10 +717,6 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.post-content {
-  min-width: 0;
 }
 
 .repost-content {
@@ -721,37 +740,41 @@
 .repost-original-post {
   background: var(--fliq-hover);
   border-radius: 12px;
-  padding: 12px 16px;
-  border: 1px solid var(--fliq-accent);
+  padding: 16px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .repost-original-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: 8px;
 }
 
 .repost-original-header .avatar {
-  width: 32px;
-  height: 32px;
-  font-size: 12px;
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+  flex-shrink: 0;
 }
 
-.repost-original-header > div {
+.repost-original-header-info {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 4px;
 }
 
 .repost-original-header strong {
   color: var(--fliq-ink);
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .repost-original-header span {
   color: var(--fliq-muted);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .repost-original-post p {
@@ -764,24 +787,36 @@
   margin-top: 8px;
 }
 
-.post-header {
+.post-header-info {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 7px;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.25;
 }
 
-.post-header strong {
+.post-header-info strong {
   color: var(--fliq-ink);
   font-size: 15px;
+  font-weight: 600;
 }
 
-.post-card p {
+.post-header-info span {
+  color: var(--fliq-muted);
+  font-size: 13px;
+}
+
+.post-content-text {
   margin: 0;
   color: var(--fliq-ink);
-  font-size: 15.5px;
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.repost-content-text {
+  margin: 0;
+  color: var(--fliq-muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .city-pill {
@@ -794,37 +829,63 @@
   font-weight: 700;
 }
 
-.post-actions {
+.post-actions-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.post-actions-pill {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  max-width: 440px;
-  padding-top: 14px;
+  gap: 2px;
+  padding: 4px 6px;
+  border: 1px solid var(--fliq-accent);
+  border-radius: 999px;
+  /* background: var(--fliq-hover); */
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.12), 0 2px 8px rgba(16, 185, 129, 0.06);
 }
 
-.post-actions button {
+.action-button {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  min-height: 32px;
-  border-radius: 8px;
+  gap: 4px;
+  min-height: 28px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--fliq-muted);
   font-size: 13px;
+  cursor: pointer;
+  transition: all 160ms ease;
 }
 
-.post-actions button.liked {
+.action-button:hover {
+  color: var(--fliq-ink);
+}
+
+.action-button.liked {
   color: #ef4444;
 }
 
-.post-actions button.liked:hover {
+.action-button.liked:hover {
   color: #dc2626;
 }
 
-.post-actions button.reposted {
+.action-button.reposted {
   color: #10b981;
 }
 
-.post-actions button.reposted:hover {
+.action-button.reposted:hover {
   color: #059669;
+}
+
+.action-separator {
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 0 2px;
+  flex-shrink: 0;
 }
 
 /* =========================

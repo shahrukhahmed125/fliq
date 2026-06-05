@@ -124,143 +124,146 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
   const canDelete = isComment && user?.id === post.user?.id
 
   return (
-    <article className="post-card" onClick={handlePostClick}>
+    <article className="post-card mb-2" onClick={handlePostClick}>
 
-      {/* USER */}
-      <div className="avatar avatar-green">
-        {post?.user?.profile_photo ? (
-          <img
-            src={post.user.profile_photo}
-            alt="profile"
-            className="avatar-img"
-          />
-        ) : (
-          post?.user?.name?.slice(0, 1) || 'U'
+      {/* Header */}
+      <div className="post-card-header">
+        <div className="avatar avatar-green">
+          {post?.user?.profile_photo ? (
+            <img
+              src={post.user.profile_photo}
+              alt="profile"
+              className="avatar-img"
+            />
+          ) : (
+            post?.user?.name?.slice(0, 1) || 'U'
+          )}
+        </div>
+        <div className="post-header-info">
+          <strong>{post?.user?.name || 'Unknown User'}</strong>
+          <span>
+            {post?.user?.username || 'user'} ·
+            {formatDate(post?.created_at) || 'Unknown Date'}
+          </span>
+        </div>
+
+        {canDelete && (
+          <div className="comment-menu">
+            <button
+              type="button"
+              className="icon-button"
+              onClick={() => setShowMenu(!showMenu)}
+              aria-label="More options"
+            >
+              <MoreHorizontal size={16} />
+            </button>
+
+            {showMenu && (
+              <div className="comment-dropdown">
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="danger-menu-item"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
-      <div className="post-content">
+      {/* Content */}
+      {post?.content && (
+        <p className="post-content-text">{post?.content}</p>
+      )}
 
-        <header className="post-header">
-          <div>
-            <strong>{post?.user?.name || 'Unknown User'}</strong>
-
-            <span>
-              {post?.user?.username || 'user'} ·
-              {formatDate(post?.created_at) || 'Unknown Date'}
-            </span>
-          </div>
-
-          {canDelete && (
-            <div className="comment-menu">
-              <button
-                type="button"
-                className="icon-button"
-                onClick={() => setShowMenu(!showMenu)}
-                aria-label="More options"
-              >
-                <MoreHorizontal size={16} />
-              </button>
-
-              {showMenu && (
-                <div className="comment-dropdown">
-                  <button
-                    type="button"
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                    className="danger-menu-item"
-                  >
-                    {isDeleting ? 'Deleting...' : 'Delete'}
-                  </button>
-                </div>
+      {/* Quoted / repost card */}
+      {isRepost && (
+        <div className="repost-original-post">
+          <div className="repost-original-header">
+            <div className="avatar avatar-green">
+              {post?.reposted_post?.user?.profile_photo ? (
+                <img
+                  src={post.reposted_post.user.profile_photo}
+                  alt="profile"
+                  className="avatar-img"
+                />
+              ) : (
+                post?.reposted_post?.user?.name?.slice(0, 1) || 'U'
               )}
+            </div>
+            <div className="repost-original-header-info">
+              <strong>{post?.reposted_post?.user?.name || 'Unknown User'}</strong>
+              <span>
+                {post?.reposted_post?.user?.username || 'user'} ·
+                {formatDate(post?.reposted_post?.created_at) || 'Unknown Date'}
+              </span>
+            </div>
+          </div>
+          {post?.reposted_post?.content && (
+            <p className="repost-content-text">{post?.reposted_post?.content}</p>
+          )}
+          {post?.reposted_post?.media?.length > 0 && (
+            <div className={`post-media ${getMediaClass()}`}>
+              {post.reposted_post.media.map((m) => {
+                if (m.status !== 'completed') {
+                  return <LoadingPlaceholder key={m.id} />
+                }
+                return m.file_type === 'image' ? (
+                  <img
+                    key={m.id}
+                    src={getMediaUrl(m.file_path)}
+                    alt="Post media"
+                    loading="lazy"
+                  />
+                ) : (
+                  <video key={m.id} controls src={getMediaUrl(m.file_path)} />
+                )
+              })}
             </div>
           )}
-        </header>
+        </div>
+      )}
 
-        {/* CONTENT */}
-        {isRepost ? (
-          <div className="repost-content">
-            <div className="repost-original-post">
-              <div className="repost-original-header">
-                <div className="avatar avatar-green">
-                  {post?.reposted_post?.user?.profile_photo ? (
-                    <img
-                      src={post.reposted_post.user.profile_photo}
-                      alt="profile"
-                      className="avatar-img"
-                    />
-                  ) : (
-                    post?.reposted_post?.user?.name?.slice(0, 1) || 'U'
-                  )}
-                </div>
-                <div>
-                  <strong>{post?.reposted_post?.user?.name || 'Unknown User'}</strong>
-                  <span>
-                    {post?.reposted_post?.user?.username || 'user'} ·
-                    {formatDate(post?.reposted_post?.created_at) || 'Unknown Date'}
-                  </span>
-                </div>
-              </div>
-              <p>{post?.reposted_post?.content}</p>
-              {post?.reposted_post?.media?.length > 0 && (
-                <div className={`post-media ${getMediaClass()}`}>
-                  {post.reposted_post.media.map((m) => {
-                    if (m.status !== 'completed') {
-                      return <LoadingPlaceholder key={m.id} />
-                    }
-                    return m.file_type === 'image' ? (
-                      <img
-                        key={m.id}
-                        src={getMediaUrl(m.file_path)}
-                        alt="Post media"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <video key={m.id} controls src={getMediaUrl(m.file_path)} />
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          <p className="post-content-text">{post?.content}</p>
-        )}
+      {/* MEDIA */}
+      {post?.media?.length > 0 && (
+        <div className={`post-media ${getMediaClass()}`} onClick={(e) => e.stopPropagation()}>
+          {post.media.map((m) => {
+            if (m.status !== 'completed') {
+              return <LoadingPlaceholder key={m.id} />
+            }
 
-        {/* MEDIA */}
-        {post?.media?.length > 0 && (
-          <div className={`post-media ${getMediaClass()}`} onClick={(e) => e.stopPropagation()}>
-            {post.media.map((m) => {
-              if (m.status !== 'completed') {
-                return <LoadingPlaceholder key={m.id} />
-              }
+            return m.file_type === 'image' ? (
+              <img key={m.id} src={getMediaUrl(m.file_path)} alt="" />
+            ) : (
+              <video key={m.id} src={getMediaUrl(m.file_path)} controls />
+            )
+          })}
+        </div>
+      )}
 
-              return m.file_type === 'image' ? (
-                <img key={m.id} src={getMediaUrl(m.file_path)} alt="" />
-              ) : (
-                <video key={m.id} src={getMediaUrl(m.file_path)} controls />
-              )
-            })}
-          </div>
-        )}
-
-        {/* ACTIONS */}
-        <div className="post-actions" onClick={(e) => e.stopPropagation()}>
-          <button 
+      {/* ACTIONS */}
+      <div className="post-actions-wrapper" onClick={(e) => e.stopPropagation()}>
+        <div className="post-actions-pill">
+          <button
             type="button"
             onClick={isComment ? handleReplyClick : handleCommentClick}
             aria-label={isComment ? 'Reply' : 'Comment'}
+            className="action-button"
           >
             <FontAwesomeIcon icon={faComment} size="lg" style={{ color: hasReplied ? '#8181f1' : 'inherit', opacity: hasReplied ? 1 : 0.7 }} />
             {!isComment && commentsCount > 0 && <span>{commentsCount}</span>}
           </button>
 
+          <div className="action-separator"></div>
+
           <button
             type="button"
             onClick={handleRepost}
             disabled={isReposting}
-            className={isReposted ? 'reposted' : ''}
+            className={isReposted ? 'action-button reposted' : 'action-button'}
             aria-label={isReposted ? 'Undo repost' : 'Repost'}
           >
             {isReposting ? (
@@ -272,11 +275,13 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
             {post?.reposts_count > 0 && <span>{post.reposts_count}</span>}
           </button>
 
-          <button 
-            type="button" 
+          <div className="action-separator"></div>
+
+          <button
+            type="button"
             onClick={handleLike}
             disabled={isLiking}
-            className={isLiked ? 'liked' : ''}
+            className={isLiked ? 'action-button liked' : 'action-button'}
             aria-label={isLiked ? 'Unlike' : 'Like'}
           >
             {isLiking ? (
@@ -287,21 +292,22 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
             {likesCount > 0 && <span>{likesCount}</span>}
           </button>
 
-          <button type="button">
+          <div className="action-separator"></div>
+
+          <button type="button" className="action-button">
             <FontAwesomeIcon icon={faShare} size="lg" className="share-icon" style={{ opacity: 0.7 }} />
           </button>
         </div>
-
-        {/* COMMENT MODAL */}
-        {!isComment && (
-          <CommentModal
-            isOpen={showCommentModal}
-            onClose={() => setShowCommentModal(false)}
-            postUuid={post.uuid || post.id}
-          />
-        )}
-
       </div>
+
+      {/* COMMENT MODAL */}
+      {!isComment && (
+        <CommentModal
+          isOpen={showCommentModal}
+          onClose={() => setShowCommentModal(false)}
+          postUuid={post.uuid || post.id}
+        />
+      )}
     </article>
   )
 }

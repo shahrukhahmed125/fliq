@@ -139,7 +139,7 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
   }
 
   return (
-    <section className={compact ? 'composer compact-composer' : 'composer'} aria-label={isCommentMode ? "Reply to post" : "Create post"}>
+    <section className={compact ? 'composer compact-composer mb-2' : 'composer mb-2'} aria-label={isCommentMode ? "Reply to post" : "Create post"}>
       <div className="avatar avatar-green">  {user?.profile_photo ? (
         <img
             src={user.profile_photo}
