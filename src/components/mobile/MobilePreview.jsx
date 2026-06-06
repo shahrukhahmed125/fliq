@@ -1,8 +1,8 @@
 import { Bell, Compass, Home, PenLine, Users } from 'lucide-react'
-import FliqMark from '../brand/FliqMark'
-import Composer from '../feed/Composer'
-import PostCard from '../feed/PostCard'
-import { posts } from '../../data/fliqData'
+import FliqMark from '@/components/brand/FliqMark'
+import Composer from '@/features/feed/components/Composer'
+import PostCard from '@/features/feed/components/PostCard'
+import { posts } from '@/data/fliqData'
 
 function MobilePreview() {
   return (

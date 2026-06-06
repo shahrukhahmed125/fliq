@@ -1,5 +1,5 @@
 import { Search, Sparkles } from 'lucide-react'
-import { trends } from '../../data/fliqData'
+import { trends } from '@/data/fliqData'
 
 function RightPanel() {
   return (

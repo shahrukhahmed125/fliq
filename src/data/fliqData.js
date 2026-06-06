@@ -3,7 +3,7 @@ import {
   Bookmark,
   Compass,
   Home,
-  MessageCircle,
+  MessageSquare,
   Settings,
   Users,
 } from 'lucide-react'
@@ -80,7 +80,7 @@ export const navItems = [
   [Home, 'Home', true],
   [Compass, 'Explore'],
   [Bell, 'Notifications'],
-  [MessageCircle, 'Messages'],
+  [MessageSquare, 'Messages'],
   [Bookmark, 'Bookmarks'],
   [Settings, 'Settings'],
 ]
