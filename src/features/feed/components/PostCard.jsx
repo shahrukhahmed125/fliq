@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { postService } from '@/services/postService'
 import CommentModal from './CommentModal'
+import PostComposerModal from './PostComposerModal'
 import { useAuth } from '@/context/useAuth'
 
 function LoadingPlaceholder() {
@@ -32,6 +33,8 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
   const [repostsCount, setRepostsCount] = useState(post?.reposts_count || post?.reposts || 0)
   const [isReposting, setIsReposting] = useState(false)
   const [hasReplied, setHasReplied] = useState(post?.has_replied || false)
+  const [showRepostMenu, setShowRepostMenu] = useState(false)
+  const [showQuoteModal, setShowQuoteModal] = useState(false)
 
   const mediaCount = post?.media?.length || 0
   const getMediaClass = () => {
@@ -67,6 +70,7 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
 
       try{
         setIsReposting(true)
+        setShowRepostMenu(false)
 
         const formData = new FormData()
         formData.append('repost_of', post?.uuid || post?.id)
@@ -84,6 +88,11 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
       }finally{
         setIsReposting(false)
       }
+  }
+
+  const handleQuote = () => {
+    setShowRepostMenu(false)
+    setShowQuoteModal(true)
   }
 
   const handleDelete = async () => {
@@ -259,21 +268,45 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
 
           <div className="action-separator"></div>
 
-          <button
-            type="button"
-            onClick={handleRepost}
-            disabled={isReposting}
-            className={isReposted ? 'action-button reposted' : 'action-button'}
-            aria-label={isReposted ? 'Undo repost' : 'Repost'}
-          >
-            {isReposting ? (
-              <Loader2 className="spinner" size={18} />
-            ) : (
-              <FontAwesomeIcon icon={faRotate} size="lg" style={{ color: isReposted ? '#10b981' : 'inherit', opacity: isReposted ? 1 : 0.7 }} />
-            )}
+          <div className="repost-button-container">
+            <button
+              type="button"
+              onClick={() => setShowRepostMenu(!showRepostMenu)}
+              disabled={isReposting}
+              className={isReposted ? 'action-button reposted' : 'action-button'}
+              aria-label={isReposted ? 'Undo repost' : 'Repost'}
+            >
+              {isReposting ? (
+                <Loader2 className="spinner" size={18} />
+              ) : (
+                <FontAwesomeIcon icon={faRotate} size="lg" style={{ color: isReposted ? '#10b981' : 'inherit', opacity: isReposted ? 1 : 0.7 }} />
+              )}
 
-            {post?.reposts_count > 0 && <span>{post.reposts_count}</span>}
-          </button>
+              {post?.reposts_count > 0 && <span>{post.reposts_count}</span>}
+            </button>
+
+            {showRepostMenu && (
+              <div className="repost-dropdown-menu">
+                <button
+                  type="button"
+                  onClick={handleRepost}
+                  disabled={isReposting}
+                  className="repost-dropdown-item"
+                >
+                  <FontAwesomeIcon icon={faRotate} size={16} />
+                  <span>Repost</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleQuote}
+                  className="repost-dropdown-item"
+                >
+                  <FontAwesomeIcon icon={faComment} size={16} />
+                  <span>Quote</span>
+                </button>
+              </div>
+            )}
+          </div>
 
           <div className="action-separator"></div>
 
@@ -284,6 +317,19 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
             className={isLiked ? 'action-button liked' : 'action-button'}
             aria-label={isLiked ? 'Unlike' : 'Like'}
           >
+
+      {/* QUOTE MODAL */}
+      {!isComment && (
+        <PostComposerModal
+          isOpen={showQuoteModal}
+          onClose={() => setShowQuoteModal(false)}
+          title="Quote post"
+          onPostSuccess={() => {
+            setShowQuoteModal(false)
+            setRepostsCount(prev => prev + 1)
+          }}
+        />
+      )}
             {isLiking ? (
               <Loader2 className="spinner" size={18} />
             ) : (
