@@ -282,7 +282,7 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
                 <FontAwesomeIcon icon={faRotate} size="lg" style={{ color: isReposted ? '#10b981' : 'inherit', opacity: isReposted ? 1 : 0.7 }} />
               )}
 
-              {post?.reposts_count > 0 && <span>{post.reposts_count}</span>}
+              {repostsCount > 0 && <span>{repostsCount}</span>}
             </button>
 
             {showRepostMenu && (
@@ -301,7 +301,7 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
                   onClick={handleQuote}
                   className="repost-dropdown-item"
                 >
-                  <FontAwesomeIcon icon={faComment} size={16} />
+                  <FontAwesomeIcon icon={faShare} size={16} />
                   <span>Quote</span>
                 </button>
               </div>
@@ -317,19 +317,6 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
             className={isLiked ? 'action-button liked' : 'action-button'}
             aria-label={isLiked ? 'Unlike' : 'Like'}
           >
-
-      {/* QUOTE MODAL */}
-      {!isComment && (
-        <PostComposerModal
-          isOpen={showQuoteModal}
-          onClose={() => setShowQuoteModal(false)}
-          title="Quote post"
-          onPostSuccess={() => {
-            setShowQuoteModal(false)
-            setRepostsCount(prev => prev + 1)
-          }}
-        />
-      )}
             {isLiking ? (
               <Loader2 className="spinner" size={18} />
             ) : (
@@ -345,6 +332,19 @@ function PostCard({ post, isComment = false, onDelete = null, postUuid = null, o
           </button>
         </div>
       </div>
+
+      {/* QUOTE MODAL */}
+      {!isComment && (
+        <PostComposerModal
+          isOpen={showQuoteModal}
+          onClose={() => setShowQuoteModal(false)}
+          title="Quote post"
+          onPostSuccess={() => {
+            setShowQuoteModal(false)
+            setRepostsCount(prev => prev + 1)
+          }}
+        />
+      )}
 
       {/* COMMENT MODAL */}
       {!isComment && (
