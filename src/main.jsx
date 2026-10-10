@@ -13,7 +13,7 @@ console.log('Root element:', rootElement)
 createRoot(rootElement).render(
   <StrictMode>
     <ErrorBoundary>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-google-client-id'}>
         <App />
       </GoogleOAuthProvider>
     </ErrorBoundary>

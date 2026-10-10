@@ -1,0 +1,8 @@
+{
+  "name": "Fliq",
+  "description": "Fliq is a calm, modern social media app prototype for Pakistan-first public conversations.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

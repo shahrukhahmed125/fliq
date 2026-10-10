@@ -100,8 +100,8 @@ function ForgotPasswordPage({ theme }) {
                       helperText={errors.email}
                       sx={{
                         '& .MuiOutlinedInput-root': {
-                          height: '56px',
-                          borderRadius: '28px',
+                          height: '50px',
+                          borderRadius: '12px',
                           backgroundColor: 'var(--fliq-surface)',
                           '& fieldset': {
                             borderColor: 'var(--fliq-border)',
@@ -121,7 +121,7 @@ function ForgotPasswordPage({ theme }) {
                         },
                         '& .MuiInputBase-input': {
                           color: 'var(--fliq-ink)',
-                          fontSize: '16px',
+                          fontSize: '15px',
                           fontWeight: 500,
                         },
                       }}

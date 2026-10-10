@@ -5,7 +5,7 @@ import {
   Home,
   MessageSquare,
   Settings,
-  Users,
+  UserRound,
 } from 'lucide-react'
 
 export const posts = [
@@ -82,5 +82,6 @@ export const navItems = [
   [Bell, 'Notifications'],
   [MessageSquare, 'Messages'],
   [Bookmark, 'Bookmarks'],
+  [UserRound, 'Profile'],
   [Settings, 'Settings'],
 ]

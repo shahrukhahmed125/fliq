@@ -1,5 +1,3 @@
-import { trends } from '@/data/fliqData';
-
 function ExploreStrip() {
   return (
     <section className="explore-strip">

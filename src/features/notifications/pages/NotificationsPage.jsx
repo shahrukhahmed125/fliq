@@ -1,142 +1,151 @@
 import { useState } from 'react'
-import { Bell, MoreHorizontal, Heart, MessageSquare, RotateCw, UserPlus, Check } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Bell, Heart, MessageSquare, Repeat2, UserPlus, CheckCheck } from 'lucide-react'
 import { getInitials } from '@/lib/helpers'
-import { useAuth } from '@/context/useAuth'
 
 function NotificationsPage() {
-  const navigate = useNavigate()
-  const { user } = useAuth()
   const [filter, setFilter] = useState('all')
-  const filters = ['All', 'Mentions', 'Likes', 'Follows']
+  const filters = ['All', 'Mentions', 'Likes', 'Reposts', 'Follows']
 
-  // Mock data for notifications
-  const notifications = [
+  const [notificationList, setNotificationList] = useState([
     {
       id: 1,
       type: 'like',
-      user: { name: 'Ayesha Khan', username: '@ayeshawrites', avatar: null },
-      post: { content: 'Building in public from Pakistan needs better communities' },
-      time: '2m',
-      read: false
+      period: 'Today',
+      users: [{ name: 'Ayesha Khan', username: '@ayeshawrites' }, { name: 'Omar Khan', username: '@omarkhan' }],
+      count: 2,
+      post: { content: 'Building in public from Pakistan needs better communities: founders, designers, and creators.' },
+      time: '2m ago',
+      read: false,
     },
     {
       id: 2,
       type: 'follow',
-      user: { name: 'Hassan Ali', username: '@hassanbuilds', avatar: null },
-      time: '15m',
-      read: false
+      period: 'Today',
+      users: [{ name: 'Hassan Ali', username: '@hassanbuilds' }],
+      count: 1,
+      time: '15m ago',
+      read: false,
     },
     {
       id: 3,
       type: 'mention',
-      user: { name: 'Zara Noor', username: '@zaracreates', avatar: null },
-      post: { content: '@user Thanks for the great feedback on the design!' },
-      time: '1h',
-      read: false
+      period: 'Today',
+      users: [{ name: 'Zara Noor', username: '@zaracreates' }],
+      count: 1,
+      post: { content: '@fliq The new typography hierarchy and adaptive navigation look remarkable!' },
+      time: '1h ago',
+      read: false,
     },
     {
       id: 4,
       type: 'repost',
-      user: { name: 'Bilal Ahmed', username: '@bilaldev', avatar: null },
-      post: { content: 'The future of tech in Pakistan is bright' },
-      time: '3h',
-      read: true
+      period: 'Yesterday',
+      users: [{ name: 'Bilal Ahmed', username: '@bilaldev' }],
+      count: 1,
+      post: { content: 'The future of software craft in Pakistan is moving towards calmer, high-signal products.' },
+      time: '18h ago',
+      read: true,
     },
     {
       id: 5,
       type: 'like',
-      user: { name: 'Mina Tariq', username: '@minatalks', avatar: null },
-      post: { content: 'Just shipped a new feature!' },
-      time: '5h',
-      read: true
+      period: 'Yesterday',
+      users: [{ name: 'Cricket Desk', username: '@cricketdesk' }, { name: 'Sarah Ahmed', username: '@sarahahmed' }, { name: 'Fatima Ali', username: '@fatimaali' }],
+      count: 3,
+      post: { content: 'Match room is live. Keep discussions thoughtful and sharp.' },
+      time: '1d ago',
+      read: true,
     },
-    {
-      id: 6,
-      type: 'follow',
-      user: { name: 'Cricket Desk', username: '@cricketdesk', avatar: null },
-      time: '1d',
-      read: true
-    },
-    {
-      id: 7,
-      type: 'mention',
-      user: { name: 'Fliq Studio', username: '@fliq', avatar: null },
-      post: { content: '@user Welcome to Fliq! We\'re excited to have you here.' },
-      time: '2d',
-      read: true
-    }
-  ]
+  ])
+
+  const handleMarkAllRead = () => {
+    setNotificationList((prev) => prev.map((n) => ({ ...n, read: true })))
+  }
+
+  const handleMarkItemRead = (id) => {
+    setNotificationList((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
+  }
 
   const getNotificationIcon = (type) => {
     switch (type) {
       case 'like':
-        return <Heart size={18} className="notification-icon like" />
+        return <Heart size={14} fill="var(--fliq-danger)" color="var(--fliq-danger)" />
       case 'mention':
-        return <MessageSquare size={18} className="notification-icon mention" />
+        return <MessageSquare size={14} color="var(--fliq-accent)" />
       case 'repost':
-        return <RotateCw size={18} className="notification-icon repost" />
+        return <Repeat2 size={14} color="var(--fliq-accent)" />
       case 'follow':
-        return <UserPlus size={18} className="notification-icon follow" />
+        return <UserPlus size={14} color="var(--fliq-accent)" />
       default:
-        return <Bell size={18} />
+        return <Bell size={14} />
     }
   }
 
-  const getNotificationText = (notification) => {
-    switch (notification.type) {
+  const getNotificationTitle = (item) => {
+    const primaryUser = item.users[0]?.name || 'Someone'
+    if (item.count > 1) {
+      const others = item.count - 1
+      return `${primaryUser} and ${others} ${others === 1 ? 'other' : 'others'}`
+    }
+    return primaryUser
+  }
+
+  const getNotificationActionText = (item) => {
+    switch (item.type) {
       case 'like':
-        return 'liked your post'
+        return item.count > 1 ? 'liked your post' : 'liked your post'
       case 'mention':
-        return 'mentioned you'
+        return 'mentioned you in a conversation'
       case 'repost':
-        return 'reposted your post'
+        return 'reposted your thought'
       case 'follow':
         return 'started following you'
       default:
-        return 'interacted with you'
+        return 'interacted with your profile'
     }
   }
 
-  const filteredNotifications = notifications.filter(notification => {
+  const filtered = notificationList.filter((item) => {
     if (filter === 'all') return true
-    if (filter === 'Mentions') return notification.type === 'mention'
-    if (filter === 'Likes') return notification.type === 'like'
-    if (filter === 'Follows') return notification.type === 'follow'
+    if (filter === 'mentions') return item.type === 'mention'
+    if (filter === 'likes') return item.type === 'like'
+    if (filter === 'reposts') return item.type === 'repost'
+    if (filter === 'follows') return item.type === 'follow'
     return true
   })
 
-  const handleNotificationClick = (notification) => {
-    // In a real app, this would navigate to the relevant post or user
-    if (notification.post) {
-      console.log('Navigate to post:', notification.post)
-    } else if (notification.type === 'follow') {
-      console.log('Navigate to user:', notification.user.username)
-    }
-  }
-
-  const handleMarkAsRead = (e, notificationId) => {
-    e.stopPropagation()
-    console.log('Mark as read:', notificationId)
-  }
+  const unreadCount = notificationList.filter((n) => !n.read).length
 
   return (
     <main className="notifications-page">
       <header className="notifications-header">
         <div className="header-content">
-          <h1>Notifications</h1>
-          <button className="icon-button" type="button" aria-label="Mark all as read">
-            <Check size={20} />
+          <div>
+            <h1>Notifications</h1>
+            {unreadCount > 0 && (
+              <span className="notifications-unread-pill">{unreadCount} unread</span>
+            )}
+          </div>
+          <button
+            className="modal-close-button"
+            type="button"
+            aria-label="Mark all as read"
+            onClick={handleMarkAllRead}
+            title="Mark all as read"
+          >
+            <CheckCheck size={18} />
           </button>
         </div>
       </header>
 
-      <div className="notifications-filters">
+      {/* Filter Tabs */}
+      <div className="notifications-filters" role="tablist">
         {filters.map((f) => (
           <button
             key={f}
             className={filter === f.toLowerCase() ? 'active' : ''}
             type="button"
+            role="tab"
             onClick={() => setFilter(f.toLowerCase())}
           >
             {f}
@@ -144,58 +153,36 @@ function NotificationsPage() {
         ))}
       </div>
 
+      {/* Notifications Stream */}
       <div className="notifications-list">
-        {filteredNotifications.length > 0 ? (
-          filteredNotifications.map((notification) => (
+        {filtered.length > 0 ? (
+          filtered.map((item) => (
             <div
-              key={notification.id}
-              className={`notification-item ${!notification.read ? 'unread' : ''}`}
-              onClick={() => handleNotificationClick(notification)}
+              key={item.id}
+              className={`notification-item ${!item.read ? 'unread' : ''}`}
+              onClick={() => handleMarkItemRead(item.id)}
             >
               <div className="notification-avatar">
-                <div className="avatar avatar-green">
-                  {notification.user.avatar ? (
-                    <img src={notification.user.avatar} alt={notification.user.name} className="avatar-img" />
-                  ) : (
-                    <span className="avatar-fallback">{getInitials(notification.user.name)}</span>
-                  )}
+                <div className="avatar">
+                  {getInitials(item.users[0]?.name || 'User')}
                 </div>
                 <div className="notification-icon-wrapper">
-                  {getNotificationIcon(notification.type)}
+                  {getNotificationIcon(item.type)}
                 </div>
               </div>
 
               <div className="notification-content">
                 <div className="notification-header">
                   <div className="notification-user">
-                    <strong>{notification.user.name}</strong>
-                    <span className="notification-username">{notification.user.username}</span>
-                    <span className="notification-action">{getNotificationText(notification)}</span>
+                    <strong>{getNotificationTitle(item)}</strong>
+                    <span className="notification-action">{getNotificationActionText(item)}</span>
                   </div>
-                  <div className="notification-actions">
-                    <span className="notification-time">{notification.time}</span>
-                    <button
-                      className="notification-more"
-                      type="button"
-                      aria-label="More options"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <MoreHorizontal size={16} />
-                    </button>
-                  </div>
+                  <span className="notification-time">{item.time}</span>
                 </div>
 
-                {notification.post && (
+                {item.post && (
                   <div className="notification-post">
-                    <p>{notification.post.content}</p>
-                  </div>
-                )}
-
-                {notification.type === 'follow' && (
-                  <div className="notification-follow">
-                    <button className="follow-button" type="button">
-                      Follow back
-                    </button>
+                    <p>{item.post.content}</p>
                   </div>
                 )}
               </div>
@@ -204,9 +191,12 @@ function NotificationsPage() {
         ) : (
           <div className="empty-state">
             <div className="empty-icon">
-              <Bell size={48} />
+              <Bell size={36} />
             </div>
-            <p>No notifications yet</p>
+            <strong style={{ color: 'var(--fliq-ink)', fontSize: '15px' }}>No notifications here</strong>
+            <p style={{ fontSize: '13px', color: 'var(--fliq-muted)' }}>
+              When people like your notes, reply, or follow your account, you will see them here.
+            </p>
           </div>
         )}
       </div>

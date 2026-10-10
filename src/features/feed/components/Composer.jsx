@@ -1,4 +1,4 @@
-import { Hash, Image, X, Loader2, Video, Check } from 'lucide-react'
+import { Hash, Image, X, Loader2, Video, Check, Smile, Globe } from 'lucide-react'
 import { useAuth } from '@/context/useAuth'
 import { getInitials } from '@/lib/helpers'
 import { useState, useRef } from 'react'
@@ -15,11 +15,15 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
   const [topics, setTopics] = useState([])
   const [showTopicInput, setShowTopicInput] = useState(false)
   const [topicInput, setTopicInput] = useState('')
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [audience, setAudience] = useState('Everyone')
   const fileInputRef = useRef(null)
   const videoInputRef = useRef(null)
   const { user } = useAuth()
 
   const isCommentMode = !!postUuid
+  const maxChars = 280
+  const charRemaining = maxChars - text.length
 
   const handlePost = async (e) => {
     e.preventDefault()
@@ -35,17 +39,17 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
         const formData = new FormData()
         formData.append('content', text)
         formData.append('parent_id', replyTo?.uuid || replyTo?.id || postUuid)
-        
+
         const response = await postService.createReply(formData)
-        
+
         setShowSuccess(true)
         setShowUploadProgress(false)
-        
+
         setTimeout(() => {
           setText('')
           setShowSuccess(false)
           setUploadProgress(0)
-          
+
           if (onCommentSuccess) {
             onCommentSuccess(response)
           }
@@ -67,11 +71,10 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
         const response = await postService.createPost(formData, (progress) => {
           setUploadProgress(progress)
         })
-        console.log('POST RESPONSE:', response)
 
         setShowSuccess(true)
         setShowUploadProgress(false)
-        
+
         setTimeout(() => {
           setText('')
           setImages([])
@@ -80,7 +83,7 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
           setTopicInput('')
           setShowSuccess(false)
           setUploadProgress(0)
-          
+
           if (onPostSuccess) {
             onPostSuccess(response.data)
           }
@@ -88,7 +91,7 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
       }
 
     } catch (error) {
-      console.log(isCommentMode ? 'COMMENT ERROR:' : 'POST ERROR:', error.response?.data || error)
+      console.error(isCommentMode ? 'COMMENT ERROR:' : 'POST ERROR:', error.response?.data || error)
       setShowUploadProgress(false)
       setUploadProgress(0)
     } finally {
@@ -139,40 +142,46 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
   }
 
   return (
-    <section className={compact ? 'composer compact-composer mb-2' : 'composer mb-2'} aria-label={isCommentMode ? "Reply to post" : "Create post"}>
-      <div className="avatar avatar-green">  {user?.profile_photo ? (
-        <img
+    <section className={`composer ${compact ? 'compact-composer' : ''}`} aria-label={isCommentMode ? "Reply to post" : "Create post"}>
+      <div className="avatar">
+        {user?.profile_photo ? (
+          <img
             src={user.profile_photo}
-            alt="profile"
+            alt={user.name}
             className="avatar-img"
           />
-        ) : (getInitials(user?.name))}
+        ) : (
+          getInitials(user?.name || 'User')
+        )}
       </div>
+
       <div className="composer-body">
         {showUploadProgress && (
           <div className="upload-progress-bar">
             <div className="upload-progress-info">
-              <span>Uploading...</span>
+              <span>Uploading media...</span>
               <span>{uploadProgress}%</span>
             </div>
             <div className="upload-progress-track">
-              <div 
-                className="upload-progress-fill" 
+              <div
+                className="upload-progress-fill"
                 style={{ width: `${uploadProgress}%` }}
               />
             </div>
           </div>
         )}
+
         <form className="composer-form" onSubmit={handlePost}>
           <textarea
-            placeholder={isCommentMode ? "Write a reply..." : "What's in your mind today?"}
+            placeholder={isCommentMode ? "Write your perspective..." : "What is unfolding today?"}
             rows={compact ? 2 : 3}
-            name='content'
+            name="content"
             value={text}
             onChange={(e) => setText(e.target.value)}
             disabled={isLoading || showSuccess}
+            maxLength={maxChars}
           />
-          
+
           {images.length > 0 && (
             <div className="composer-images">
               {images.map((image, index) => (
@@ -185,7 +194,7 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
                     aria-label="Remove image"
                     disabled={isLoading || showSuccess}
                   >
-                    <X size={14} />
+                    <X size={13} />
                   </button>
                 </div>
               ))}
@@ -204,7 +213,7 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
                     aria-label="Remove video"
                     disabled={isLoading || showSuccess}
                   >
-                    <X size={14} />
+                    <X size={13} />
                   </button>
                 </div>
               ))}
@@ -218,12 +227,12 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
                   #{topic}
                   <button
                     type="button"
-                    className="remove-topic"
                     onClick={() => removeTopic(topic)}
-                    aria-label="Remove topic"
+                    aria-label={`Remove #${topic}`}
                     disabled={isLoading || showSuccess}
+                    style={{ display: 'grid', placeItems: 'center', marginLeft: '2px' }}
                   >
-                    <X size={12} />
+                    <X size={11} />
                   </button>
                 </span>
               ))}
@@ -232,9 +241,10 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
 
           {showTopicInput && (
             <div className="composer-topic-input">
+              <span style={{ fontSize: '12px', color: 'var(--fliq-accent)' }}>#</span>
               <input
                 type="text"
-                placeholder="Add a topic..."
+                placeholder="tag name..."
                 value={topicInput}
                 onChange={(e) => setTopicInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -246,61 +256,141 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
                 autoFocus
               />
               <button type="button" onClick={() => setShowTopicInput(false)}>
-                <X size={16} />
+                <X size={13} />
               </button>
             </div>
           )}
-            <>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                style={{ display: 'none' }}
-                onChange={handleImageChange}
-              />
 
-              <input
-                ref={videoInputRef}
-                type="file"
-                accept="video/*"
-                multiple
-                style={{ display: 'none' }}
-                onChange={handleVideoChange}
-              />
-            </>
+          {/* Quick Topics Suggested Bar */}
+          {showTopicInput && (
+            <div className="composer-quick-topics">
+              <span className="quick-topics-label">Suggested:</span>
+              {['pakistan', 'cricket', 'tech', 'creators', 'design'].map((t) => (
+                <button
+                  type="button"
+                  key={t}
+                  className="quick-topic-btn"
+                  onClick={() => {
+                    if (!topics.includes(t)) {
+                      setTopics((prev) => [...prev, t])
+                    }
+                  }}
+                >
+                  #{t}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Quick Emoji Tray */}
+          {showEmojiPicker && (
+            <div className="composer-emoji-tray">
+              {['✨', '🔥', '💡', '🏏', '🇵🇰', '👏', '🎯', '❤️', '🚀', '🙌'].map((emoji) => (
+                <button
+                  type="button"
+                  key={emoji}
+                  className="composer-emoji-btn"
+                  onClick={() => setText((prev) => prev + emoji)}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            style={{ display: 'none' }}
+            onChange={handleImageChange}
+          />
+
+          <input
+            ref={videoInputRef}
+            type="file"
+            accept="video/*"
+            multiple
+            style={{ display: 'none' }}
+            onChange={handleVideoChange}
+          />
 
           <div className="composer-actions">
             <div className="composer-tools">
-                <>
-                  <button type="button" aria-label="Add image" onClick={handleImageClick} disabled={isLoading || showSuccess}>
-                    <Image size={18} />
-                  </button>
-                  <button type="button" aria-label="Add video" onClick={handleVideoClick} disabled={isLoading || showSuccess}>
-                    <Video size={18} />
-                  </button>
-                  <button type="button" aria-label="Add topic" onClick={handleTopicClick} disabled={isLoading || showSuccess}>
-                    <Hash size={18} />
-                  </button>
-                </>
+              <button
+                type="button"
+                aria-label="Attach image"
+                onClick={handleImageClick}
+                disabled={isLoading || showSuccess}
+                title="Attach photo"
+              >
+                <Image size={17} />
+              </button>
+              <button
+                type="button"
+                aria-label="Attach video"
+                onClick={handleVideoClick}
+                disabled={isLoading || showSuccess}
+                title="Attach video"
+              >
+                <Video size={17} />
+              </button>
+              <button
+                type="button"
+                aria-label="Add topic"
+                onClick={handleTopicClick}
+                disabled={isLoading || showSuccess}
+                title="Add hashtag"
+                className={showTopicInput ? 'tool-active' : ''}
+              >
+                <Hash size={17} />
+              </button>
+              <button
+                type="button"
+                aria-label="Insert emoji"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                disabled={isLoading || showSuccess}
+                title="Quick emojis"
+                className={showEmojiPicker ? 'tool-active' : ''}
+              >
+                <Smile size={17} />
+              </button>
+              {!isCommentMode && (
+                <button
+                  type="button"
+                  className="audience-pill-btn"
+                  onClick={() => setAudience(audience === 'Everyone' ? 'Followers' : 'Everyone')}
+                  title="Audience visibility"
+                >
+                  <Globe size={12} />
+                  <span>{audience}</span>
+                </button>
+              )}
+              {text.length > 0 && (
+                <span style={{ fontSize: '11px', color: charRemaining < 20 ? 'var(--fliq-danger)' : 'var(--fliq-muted-light)', fontVariantNumeric: 'tabular-nums', marginLeft: '6px' }}>
+                  {charRemaining}
+                </span>
+              )}
             </div>
-            <button 
-              className={`primary-action ${showSuccess ? 'success' : ''}`} 
-              type="submit" 
+
+            <button
+              className={`primary-action ${showSuccess ? 'success' : ''}`}
+              type="submit"
               disabled={isLoading || showSuccess || (!isCommentMode && !text.trim() && images.length === 0 && videos.length === 0) || (isCommentMode && !text.trim())}
             >
               {showSuccess ? (
                 <>
-                  <Check className="check-icon" size={16} />
-                  {isCommentMode ? 'Replied!' : 'Posted!'}
+                  <Check size={15} />
+                  <span>{isCommentMode ? 'Replied' : 'Published'}</span>
                 </>
               ) : isLoading ? (
                 <>
-                  <Loader2 className="spinner" size={16} />
-                  {isCommentMode ? 'Replying...' : 'Posting...'}
+                  <Loader2 className="spinner" size={15} />
+                  <span>{isCommentMode ? 'Replying...' : 'Publishing...'}</span>
                 </>
               ) : (
-                isCommentMode ? 'Reply' : 'Post'
+                <span>{isCommentMode ? 'Reply' : 'Publish'}</span>
               )}
             </button>
           </div>

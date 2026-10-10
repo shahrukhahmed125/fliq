@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LogOut, Moon, MoreHorizontal, PenLine, Settings, UserRound } from 'lucide-react'
+import { LogOut, Moon, MoreHorizontal, PenLine, Settings, UserRound, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import BrandLockup from '@/components/brand/BrandLockup'
 import { navItems } from '@/data/fliqData'
 import Spinner from '@/components/ui/Spinner'
@@ -11,7 +11,7 @@ import { useAuth } from '@/context/useAuth'
 import { getInitials } from '@/lib/helpers'
 import PostComposerModal from '@/features/feed/components/PostComposerModal'
 
-function Sidebar({ theme, onSignOut }) {
+function Sidebar({ theme, onSignOut, isRailCompact = false, onToggleRail = null }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
@@ -75,8 +75,22 @@ function Sidebar({ theme, onSignOut }) {
 
   return (
     <>
-    <aside className="sidebar">
-      <BrandLockup theme={theme} />
+    <aside className={`sidebar ${isRailCompact ? 'rail-compact' : ''}`}>
+      <div className="sidebar-top-bar">
+        <BrandLockup theme={theme} />
+        {onToggleRail && (
+          <button
+            type="button"
+            className="rail-toggle-btn"
+            onClick={onToggleRail}
+            aria-label={isRailCompact ? 'Expand navigation' : 'Collapse to compact rail'}
+            title={isRailCompact ? 'Expand navigation' : 'Collapse to compact rail'}
+          >
+            {isRailCompact ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          </button>
+        )}
+      </div>
+
       <nav className="nav-list" aria-label="Primary navigation">
         {navItems.map(([Icon, label]) => {
           const isActive =
@@ -85,54 +99,41 @@ function Sidebar({ theme, onSignOut }) {
             (label === 'Notifications' && location.pathname === ROUTES.NOTIFICATIONS) ||
             (label === 'Messages' && location.pathname === ROUTES.MESSAGES) ||
             (label === 'Bookmarks' && location.pathname === ROUTES.BOOKMARKS) ||
-            (label === 'Settings' && location.pathname === ROUTES.SETTINGS_ACCOUNT)
+            (label === 'Profile' && location.pathname === ROUTES.PROFILE) ||
+            (label === 'Settings' && (location.pathname === ROUTES.SETTINGS_ACCOUNT || location.pathname === ROUTES.SETTINGS_DISPLAY))
+
+          const badgeCount = label === 'Notifications' ? 3 : label === 'Messages' ? 1 : 0
 
           return (
           <a
             className={isActive ? 'nav-link active' : 'nav-link'}
             href={`#${label.toLowerCase()}`}
             key={label}
+            title={label}
             onClick={(event) => {
-              if (label === 'Home') {
-                event.preventDefault()
-                navigate(ROUTES.HOME)
-              }
-
-              if (label === 'Explore') {
-                event.preventDefault()
-                navigate(ROUTES.EXPLORE)
-              }
-
-              if (label === 'Notifications') {
-                event.preventDefault()
-                navigate(ROUTES.NOTIFICATIONS)
-              }
-
-              if (label === 'Messages') {
-                event.preventDefault()
-                navigate(ROUTES.MESSAGES)
-              }
-
-              if (label === 'Bookmarks') {
-                event.preventDefault()
-                navigate(ROUTES.BOOKMARKS)
-              }
-
-              if (label === 'Settings') {
-                event.preventDefault()
-                navigate(ROUTES.SETTINGS_ACCOUNT)
-              }
+              event.preventDefault()
+              if (label === 'Home') navigate(ROUTES.HOME)
+              else if (label === 'Explore') navigate(ROUTES.EXPLORE)
+              else if (label === 'Notifications') navigate(ROUTES.NOTIFICATIONS)
+              else if (label === 'Messages') navigate(ROUTES.MESSAGES)
+              else if (label === 'Bookmarks') navigate(ROUTES.BOOKMARKS)
+              else if (label === 'Profile') navigate(ROUTES.PROFILE)
+              else if (label === 'Settings') navigate(ROUTES.SETTINGS_ACCOUNT)
             }}
           >
-            <Icon size={21} strokeWidth={1.7} />
-            <span>{label}</span>
+            <div className="nav-icon-container">
+              <Icon size={21} strokeWidth={1.7} />
+              {badgeCount > 0 && <span className="nav-badge-dot" />}
+            </div>
+            <span className="nav-label">{label}</span>
           </a>
           )
         })}
       </nav>
-      <button className="post-button" type="button" onClick={handleCreatePost}>
+
+      <button className="post-button" type="button" onClick={handleCreatePost} title="Create note">
         <PenLine size={19} />
-        <span>Post</span>
+        <span className="post-btn-text">Post</span>
       </button>
       <div className="sidebar-profile-wrap" ref={profileMenuRef}>
         {isProfileMenuOpen && (

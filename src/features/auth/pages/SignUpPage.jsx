@@ -7,7 +7,6 @@ import BackgroundPattern from '@/features/auth/components/BackgroundPattern'
 import { TextField } from '@mui/material'
 import Spinner from '@/components/ui/Spinner'
 import { authService } from '@/services/authService'
-import { storageService } from '@/services/storageService'
 import { ROUTES } from '@/lib/constants'
 import { useGoogleLogin } from '@react-oauth/google'
 import { useAuth } from '@/context/useAuth'
@@ -171,9 +170,20 @@ function SignUpPage({ theme }) {
   const handleSocialSignUp = (provider) => {
     setIsLoading(true)
     setTimeout(() => {
+      const demoUser = {
+        id: 1,
+        name: provider === 'apple' ? 'Apple User' : 'Guest User',
+        username: '@fliquser',
+        email: `${provider}@example.com`,
+        profile_photo: '/brand/fliq-app-icon-light.png',
+        profile_cover: '/cover/default-1.png',
+        bio: 'Calm conversations on Fliq.',
+        created_at: new Date().toISOString()
+      }
+      login(demoUser, 'demo-token-' + Date.now())
       setIsLoading(false)
-      navigate('/feed')
-    }, 1000)
+      navigate(ROUTES.HOME)
+    }, 500)
   }
 
   return (
@@ -247,8 +257,8 @@ function SignUpPage({ theme }) {
                   helperText={errors.name}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      height: '56px',
-                      borderRadius: '28px',
+                      height: '50px',
+                      borderRadius: '12px',
                       backgroundColor: 'var(--fliq-surface)',
                       '& fieldset': {
                         borderColor: 'var(--fliq-border)',
@@ -268,7 +278,7 @@ function SignUpPage({ theme }) {
                     },
                     '& .MuiInputBase-input': {
                       color: 'var(--fliq-ink)',
-                      fontSize: '16px',
+                      fontSize: '15px',
                       fontWeight: 500,
                     },
                   }}
@@ -289,8 +299,8 @@ function SignUpPage({ theme }) {
                   helperText={errors.email}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      height: '56px',
-                      borderRadius: '28px',
+                      height: '50px',
+                      borderRadius: '12px',
                       backgroundColor: 'var(--fliq-surface)',
                       '& fieldset': {
                         borderColor: 'var(--fliq-border)',
@@ -310,7 +320,7 @@ function SignUpPage({ theme }) {
                     },
                     '& .MuiInputBase-input': {
                       color: 'var(--fliq-ink)',
-                      fontSize: '16px',
+                      fontSize: '15px',
                       fontWeight: 500,
                     },
                   }}
@@ -331,8 +341,8 @@ function SignUpPage({ theme }) {
                   helperText={errors.password}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      height: '56px',
-                      borderRadius: '28px',
+                      height: '50px',
+                      borderRadius: '12px',
                       backgroundColor: 'var(--fliq-surface)',
                       '& fieldset': {
                         borderColor: 'var(--fliq-border)',
@@ -352,7 +362,7 @@ function SignUpPage({ theme }) {
                     },
                     '& .MuiInputBase-input': {
                       color: 'var(--fliq-ink)',
-                      fontSize: '16px',
+                      fontSize: '15px',
                       fontWeight: 500,
                     },
                   }}

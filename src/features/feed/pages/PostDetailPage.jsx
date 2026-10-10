@@ -1,18 +1,16 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Heart, MessageCircle, Repeat2, Send, Loader2 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { ArrowLeft, Heart, MessageSquare, Repeat2, Share2, Loader2, Feather, X } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
 import { postService } from '@/services/postService'
-import { getMediaUrl, formatDate } from '@/lib/helpers'
+import { getMediaUrl, formatDate, getInitials } from '@/lib/helpers'
 import PostCard from '../components/PostCard'
 import Composer from '../components/Composer'
-import { useAuth } from '@/context/useAuth'
-import { getInitials } from '@/lib/helpers'
 
 function LoadingPlaceholder() {
   return (
-    <div className="media-loading-placeholder">
-      <Loader2 className="spinner" size={24} />
-      <span>Processing...</span>
+    <div className="media-loading-placeholder" style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--fliq-muted)' }}>
+      <Loader2 className="spinner" size={20} />
+      <span>Loading visual...</span>
     </div>
   )
 }
@@ -20,7 +18,6 @@ function LoadingPlaceholder() {
 function PostDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { user } = useAuth()
   const [post, setPost] = useState(null)
   const [comments, setComments] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -30,45 +27,45 @@ function PostDetailPage() {
   const [commentsCount, setCommentsCount] = useState(0)
   const [replyTo, setReplyTo] = useState(null)
 
-  useEffect(() => {
-    fetchPost()
+  const fetchComments = useCallback(async () => {
+    try {
+      const data = await postService.getReplies(id)
+      setComments(Array.isArray(data) ? data : [])
+    } catch (error) {
+      console.error('Fetch replies error:', error)
+    }
   }, [id])
 
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
       setIsLoading(true)
       const data = await postService.getPost(id)
       setPost(data)
       setIsLiked(data?.is_liked || false)
       setLikesCount(data?.likes_count || data?.likes || 0)
-      setCommentsCount(data?.comments_count || 0)
+      setCommentsCount(data?.comments_count || data?.replies_count || 0)
       fetchComments()
     } catch (error) {
       console.error('Fetch post error:', error)
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [id, fetchComments])
 
-  const fetchComments = async () => {
-    try {
-      const data = await postService.getReplies(id)
-      setComments(data)
-    } catch (error) {
-      console.error('Fetch replies error:', error)
-    }
-  }
+  useEffect(() => {
+    fetchPost()
+  }, [fetchPost])
 
   const handleLike = async () => {
-    if (isLiking) return
-    
+    if (isLiking || !post) return
+
     try {
       setIsLiking(true)
       const response = await postService.toggleLike(post.uuid || post.id)
-      
+
       if (response) {
         setIsLiked(response.is_liked !== undefined ? response.is_liked : !isLiked)
-        setLikesCount(response.likes_count !== undefined ? response.likes_count : (isLiked ? likesCount - 1 : likesCount + 1))
+        setLikesCount(response.likes_count !== undefined ? response.likes_count : (isLiked ? Math.max(0, likesCount - 1) : likesCount + 1))
       }
     } catch (error) {
       console.error('Like error:', error)
@@ -77,34 +74,26 @@ function PostDetailPage() {
     }
   }
 
-  const handleCommentCountChange = (newCount) => {
-    setCommentsCount(newCount)
-  }
-
   const handleReply = (comment) => {
     setReplyTo(comment)
-  }
-
-  const handleCancelReply = () => {
-    setReplyTo(null)
+    document.querySelector('.post-detail-comment-form')?.scrollIntoView({ behavior: 'smooth' })
   }
 
   const handleCommentAdded = (newComment) => {
     if (replyTo) {
-      // If replying to a comment, add it as a nested reply
       setComments((prev) => {
-        const addNestedReply = (comments) => {
-          return comments.map((comment) => {
+        const addNestedReply = (list) => {
+          return list.map((comment) => {
             if (comment.uuid === replyTo.uuid || comment.id === replyTo.id) {
               return {
                 ...comment,
-                replies: [...(comment.replies || []), newComment]
+                replies: [...(comment.replies || []), newComment],
               }
             }
             if (comment.replies && comment.replies.length > 0) {
               return {
                 ...comment,
-                replies: addNestedReply(comment.replies)
+                replies: addNestedReply(comment.replies),
               }
             }
             return comment
@@ -113,17 +102,16 @@ function PostDetailPage() {
         return addNestedReply(prev)
       })
     } else {
-      // Top-level comment
       setComments((prev) => [newComment, ...prev])
     }
-    handleCommentCountChange(commentsCount + 1)
+    setCommentsCount((prev) => prev + 1)
     setReplyTo(null)
   }
 
   const handleDeleteComment = (commentUuid) => {
     setComments((prev) => {
-      const removeComment = (comments) => {
-        return comments.filter((comment) => {
+      const removeComment = (list) => {
+        return list.filter((comment) => {
           if (comment.uuid === commentUuid || comment.id === commentUuid) {
             return false
           }
@@ -135,7 +123,7 @@ function PostDetailPage() {
       }
       return removeComment(prev)
     })
-    handleCommentCountChange(commentsCount - 1)
+    setCommentsCount((prev) => Math.max(0, prev - 1))
   }
 
   const mediaCount = post?.media?.length || 0
@@ -151,17 +139,13 @@ function PostDetailPage() {
     return (
       <div className="post-detail-page">
         <div className="post-detail-header">
-          <button 
-            type="button"
-            onClick={() => navigate(-1)}
-            className="back-button"
-          >
-            <ArrowLeft size={20} />
+          <button type="button" onClick={() => navigate(-1)} className="back-button" aria-label="Back">
+            <ArrowLeft size={18} />
           </button>
           <h2>Post</h2>
         </div>
         <div className="loading-spinner">
-          <Loader2 className="spinner" size={32} />
+          <Loader2 className="spinner" size={28} />
         </div>
       </div>
     )
@@ -171,102 +155,129 @@ function PostDetailPage() {
     return (
       <div className="post-detail-page">
         <div className="post-detail-header">
-          <button 
-            type="button"
-            onClick={() => navigate(-1)}
-            className="back-button"
-          >
-            <ArrowLeft size={20} />
+          <button type="button" onClick={() => navigate(-1)} className="back-button" aria-label="Back">
+            <ArrowLeft size={18} />
           </button>
-          <h2>Post</h2>
+          <h2>Conversation</h2>
         </div>
-        <div className="post-detail-error">
-          <p>Post not found</p>
+        <div className="empty-state">
+          <p>This discussion could not be found or has been removed.</p>
         </div>
       </div>
     )
   }
 
+  const authorName = post?.user?.name || post?.name || 'Unknown User'
+  const authorUsername = post?.user?.username || post?.handle || '@user'
+  const contentText = post?.content || post?.text || ''
+
   return (
     <div className="post-detail-page">
+      {/* Top Header */}
       <div className="post-detail-header">
-        <button 
+        <button
           type="button"
           onClick={() => navigate(-1)}
           className="back-button"
+          aria-label="Back"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={18} />
         </button>
-        <h2>Post</h2>
+        <h2>Thread</h2>
       </div>
 
       <div className="post-detail-content">
+        {/* Main Post Spotlight */}
         <article className="post-card post-detail-card">
-          <div className="avatar avatar-green">
-            {getInitials(post?.user?.name)}
+          <div className="post-card-header">
+            <div className="avatar">
+              {post?.user?.profile_photo ? (
+                <img src={post.user.profile_photo} alt={authorName} className="avatar-img" />
+              ) : (
+                getInitials(authorName)
+              )}
+            </div>
+            <div className="post-header-info">
+              <strong>{authorName}</strong>
+              <span>{authorUsername}</span>
+              <span aria-hidden="true">·</span>
+              <span>{formatDate(post?.created_at)}</span>
+            </div>
           </div>
 
-          <div className="post-content">
-            <header className="post-header">
-              <div>
-                <strong>{post?.user?.name || 'Unknown User'}</strong>
-                <span>
-                  {post?.user?.username || 'user'} ·
-                  {formatDate(post?.created_at) || 'Unknown Date'}
-                </span>
-              </div>
-            </header>
+          <p className="post-content-text" style={{ fontSize: '17px', lineHeight: '1.6', marginTop: '6px' }}>
+            {contentText}
+          </p>
 
-            <p>{post?.content}</p>
+          {post?.media?.length > 0 && (
+            <div className={`post-media ${getMediaClass()}`}>
+              {post.media.map((m) => {
+                if (m.status !== 'completed') return <LoadingPlaceholder key={m.id} />
+                return m.file_type === 'image' ? (
+                  <img key={m.id} src={getMediaUrl(m.file_path)} alt="" />
+                ) : (
+                  <video key={m.id} src={getMediaUrl(m.file_path)} controls />
+                )
+              })}
+            </div>
+          )}
 
-            {post?.media?.length > 0 && (
-              <div className={`post-media ${getMediaClass()}`}>
-                {post.media.map((m) => {
-                  if (m.status !== 'completed') {
-                    return <LoadingPlaceholder key={m.id} />
-                  }
-
-                  return m.file_type === 'image' ? (
-                    <img key={m.id} src={getMediaUrl(m.file_path)} alt="" />
-                  ) : (
-                    <video key={m.id} src={getMediaUrl(m.file_path)} controls />
-                  )
-                })}
-              </div>
-            )}
-
-            <div className="post-actions">
-              <button type="button">
-                <MessageCircle size={18} /> {commentsCount}
+          {/* Detailed Interaction Row */}
+          <div className="post-actions-wrapper" style={{ marginTop: '12px' }}>
+            <div className="post-actions-pill">
+              <button type="button" className="action-button">
+                <MessageSquare size={16} />
+                <span>{commentsCount}</span>
               </button>
 
-              <button type="button">
-                <Repeat2 size={18} /> {post?.reposts_count || 0}
+              <button type="button" className="action-button">
+                <Repeat2 size={17} />
+                <span>{post?.reposts_count || 0}</span>
               </button>
 
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleLike}
                 disabled={isLiking}
-                className={isLiked ? 'liked' : ''}
-                aria-label={isLiked ? 'Unlike post' : 'Like post'}
+                className={`action-button ${isLiked ? 'liked' : ''}`}
               >
                 {isLiking ? (
-                  <Loader2 className="spinner" size={18} />
+                  <Loader2 className="spinner" size={16} />
                 ) : (
-                  <Heart size={18} fill={isLiked ? 'currentColor' : 'none'} />
+                  <Heart size={16} fill={isLiked ? 'currentColor' : 'none'} />
                 )}
-                {likesCount}
+                <span>{likesCount}</span>
               </button>
 
-              <button type="button">
-                <Send size={18} />
+              <button
+                type="button"
+                className="action-button"
+                onClick={() => {
+                  navigator.clipboard?.writeText(window.location.href)
+                }}
+              >
+                <Share2 size={16} />
               </button>
             </div>
           </div>
         </article>
+
+        {/* Inline Reply Form */}
         <div className="post-detail-comment-form">
-          <Composer 
+          {replyTo && (
+            <div className="reply-to-context-pill">
+              <span>Replying to <strong>{replyTo.user?.name || replyTo.name || 'Author'}</strong></span>
+              <button
+                type="button"
+                onClick={() => setReplyTo(null)}
+                aria-label="Cancel reply context"
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'grid', placeItems: 'center', color: 'var(--fliq-muted)' }}
+              >
+                <X size={13} />
+              </button>
+            </div>
+          )}
+          <Composer
             postUuid={post.uuid || post.id}
             onCommentSuccess={handleCommentAdded}
             compact={true}
@@ -274,10 +285,14 @@ function PostDetailPage() {
           />
         </div>
 
+        {/* Threaded Replies */}
         <div className="post-detail-comments">
           {comments.length === 0 ? (
-            <div className="comments-empty">
-              <p>No comments yet. Be the first to comment!</p>
+            <div className="empty-state">
+              <div className="empty-icon">
+                <Feather size={32} />
+              </div>
+              <p>No replies yet. Start the conversation.</p>
             </div>
           ) : (
             comments.map((comment) => (
@@ -306,7 +321,6 @@ function PostDetailPage() {
             ))
           )}
         </div>
-
       </div>
     </div>
   )

@@ -37,5 +37,11 @@ export const getRandomCover = () => {
 }
 
 export const getMediaUrl = (path) => {
-  return `${import.meta.env.VITE_MEDIA_URL}/${path}`;
-};
+  if (!path) return ''
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('blob:') || path.startsWith('data:') || path.startsWith('/')) {
+    return path
+  }
+  const base = import.meta.env.VITE_MEDIA_URL
+  if (!base) return `/${path}`
+  return `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`
+}
