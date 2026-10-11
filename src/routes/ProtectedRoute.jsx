@@ -1,18 +1,20 @@
 import { Outlet, Navigate } from 'react-router-dom'
-import { storageService } from '@/services/storageService'
+import { useAuth } from '@/context/useAuth'
+import ScreenLoader from '@/components/ui/ScreenLoader'
 
 function ProtectedRoute() {
-  console.log('ProtectedRoute checking authentication...')
-  const isAuthenticated = storageService.isAuthenticated()
-  console.log('Is authenticated:', isAuthenticated)
+  const { isAuthenticated, loading } = useAuth()
+
+  if (loading) {
+    return <ScreenLoader />
+  }
 
   if (!isAuthenticated) {
-    console.log('Redirecting to /signin')
     return <Navigate to="/signin" replace />
   }
 
-  console.log('Rendering Outlet')
   return <Outlet />
 }
 
 export default ProtectedRoute
+

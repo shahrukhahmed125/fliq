@@ -5,10 +5,9 @@ import BrandLockup from '@/components/brand/BrandLockup'
 import { navItems } from '@/data/fliqData'
 import Spinner from '@/components/ui/Spinner'
 import { authService } from '@/services/authService'
-import { storageService } from '@/services/storageService'
 import { ROUTES } from '@/lib/constants'
 import { useAuth } from '@/context/useAuth'
-import { getInitials } from '@/lib/helpers'
+import { getInitials, getMediaUrl } from '@/lib/helpers'
 import PostComposerModal from '@/features/feed/components/PostComposerModal'
 
 function Sidebar({ theme, onSignOut, isRailCompact = false, onToggleRail = null }) {
@@ -18,7 +17,7 @@ function Sidebar({ theme, onSignOut, isRailCompact = false, onToggleRail = null 
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [showComposerModal, setShowComposerModal] = useState(false)
   const profileMenuRef = useRef(null)
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
 
   useEffect(() => {
     function handlePointerDown(event) {
@@ -48,23 +47,15 @@ function Sidebar({ theme, onSignOut, isRailCompact = false, onToggleRail = null 
       
       // Make API call to logout
       await authService.logout()
-      
-      // Clear storage
-      storageService.clear()
-      
-      // Call the parent onSignOut function
-      onSignOut()
-      navigate(ROUTES.SIGN_IN)
-      
     } catch (error) {
       console.error('Logout error:', error)
-      // Even if API call fails, clear storage and sign out
-      storageService.clear()
-      onSignOut()
-      navigate(ROUTES.SIGN_IN)
     } finally {
+      // Always clear auth state (context + storage) and redirect
+      logout()
+      if (onSignOut) onSignOut()
       setIsLoggingOut(false)
       setIsProfileMenuOpen(false)
+      navigate(ROUTES.SIGN_IN)
     }
   }
 
@@ -142,7 +133,7 @@ function Sidebar({ theme, onSignOut, isRailCompact = false, onToggleRail = null 
               <div className="avatar">
                 {user?.profile_photo ? (
                   <img
-                    src={user.profile_photo}
+                    src={getMediaUrl(user.profile_photo)}
                     alt="profile"
                     className="avatar-img"
                   />
@@ -222,7 +213,7 @@ function Sidebar({ theme, onSignOut, isRailCompact = false, onToggleRail = null 
           <div className="avatar">
             {user?.profile_photo ? (
               <img
-                src={user.profile_photo}
+                src={getMediaUrl(user.profile_photo)}
                 alt="profile"
                 className="avatar-img"
               />

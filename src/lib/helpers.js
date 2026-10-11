@@ -38,10 +38,18 @@ export const getRandomCover = () => {
 
 export const getMediaUrl = (path) => {
   if (!path) return ''
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('blob:') || path.startsWith('data:') || path.startsWith('/')) {
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('blob:') || path.startsWith('data:')) {
     return path
   }
-  const base = import.meta.env.VITE_MEDIA_URL
-  if (!base) return `/${path}`
+  const base = import.meta.env.VITE_MEDIA_URL || 'http://127.0.0.1:8080/storage'
+  if (path.startsWith('/storage/')) {
+    return `${base.replace(/\/storage\/?$/, '')}${path}`
+  }
+  if (path.startsWith('storage/')) {
+    return `${base.replace(/\/storage\/?$/, '')}/${path}`
+  }
+  if (path.startsWith('/')) {
+    return path
+  }
   return `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`
 }

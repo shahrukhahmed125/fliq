@@ -141,22 +141,12 @@ function SignInPage({ theme }) {
   }
 
   const handleSocialSignIn = (provider) => {
-    setIsLoading(true)
-    setTimeout(() => {
-      const demoUser = {
-        id: 1,
-        name: provider === 'apple' ? 'Apple User' : 'Guest User',
-        username: '@fliquser',
-        email: `${provider}@example.com`,
-        profile_photo: '/brand/fliq-app-icon-light.png',
-        profile_cover: '/cover/default-1.png',
-        bio: 'Calm conversations on Fliq.',
-        created_at: new Date().toISOString()
-      }
-      login(demoUser, 'demo-token-' + Date.now())
-      setIsLoading(false)
-      navigate(ROUTES.HOME)
-    }, 500)
+    setIsLoading(false)
+    setGeneralError(
+      provider === 'apple'
+        ? 'Apple Sign In is not configured for the current Laravel backend.'
+        : 'Social sign-in is not configured until the backend OAuth provider is enabled.'
+    )
   }
 
   return (

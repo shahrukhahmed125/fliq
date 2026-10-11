@@ -99,7 +99,7 @@ function ProfilePage() {
         <div
           className="profile-cover"
           style={{
-            backgroundImage: `url(${user?.profile_cover ? user.profile_cover : getRandomCover()})`,
+            backgroundImage: `url(${user?.profile_cover ? getMediaUrl(user.profile_cover) : getRandomCover()})`,
           }}
         />
 
@@ -107,7 +107,7 @@ function ProfilePage() {
           <div className="profile-main-avatar">
             {user?.profile_photo ? (
               <img
-                src={user.profile_photo}
+                src={getMediaUrl(user.profile_photo)}
                 alt="profile"
                 className="avatar-img"
               />

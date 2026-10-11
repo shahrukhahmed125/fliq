@@ -85,7 +85,7 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
           setUploadProgress(0)
 
           if (onPostSuccess) {
-            onPostSuccess(response.data)
+            onPostSuccess(response)
           }
         }, 200)
       }

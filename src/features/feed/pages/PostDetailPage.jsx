@@ -64,8 +64,13 @@ function PostDetailPage() {
       const response = await postService.toggleLike(post.uuid || post.id)
 
       if (response) {
-        setIsLiked(response.is_liked !== undefined ? response.is_liked : !isLiked)
-        setLikesCount(response.likes_count !== undefined ? response.likes_count : (isLiked ? Math.max(0, likesCount - 1) : likesCount + 1))
+        const nextLiked = response.is_liked !== undefined ? response.is_liked : response.liked !== undefined ? response.liked : !isLiked
+        setIsLiked(nextLiked)
+        if (response.likes_count !== undefined) {
+          setLikesCount(response.likes_count)
+        } else {
+          setLikesCount((prev) => (nextLiked ? prev + 1 : Math.max(0, prev - 1)))
+        }
       }
     } catch (error) {
       console.error('Like error:', error)
@@ -192,7 +197,7 @@ function PostDetailPage() {
           <div className="post-card-header">
             <div className="avatar">
               {post?.user?.profile_photo ? (
-                <img src={post.user.profile_photo} alt={authorName} className="avatar-img" />
+                <img src={getMediaUrl(post.user.profile_photo)} alt={authorName} className="avatar-img" />
               ) : (
                 getInitials(authorName)
               )}
