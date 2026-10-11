@@ -72,12 +72,15 @@ function Sidebar({ theme, onSignOut, isRailCompact = false, onToggleRail = null 
         {onToggleRail && (
           <button
             type="button"
-            className="rail-toggle-btn"
+            className={`rail-toggle-btn ${isRailCompact ? 'is-compact' : ''}`}
             onClick={onToggleRail}
-            aria-label={isRailCompact ? 'Expand navigation' : 'Collapse to compact rail'}
-            title={isRailCompact ? 'Expand navigation' : 'Collapse to compact rail'}
+            aria-label={isRailCompact ? 'Expand navigation rail' : 'Collapse navigation rail'}
+            aria-expanded={!isRailCompact}
+            title={isRailCompact ? 'Expand navigation (Rail)' : 'Collapse navigation (Rail)'}
           >
-            {isRailCompact ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+            <span className="rail-toggle-icon-wrap">
+              {isRailCompact ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
+            </span>
           </button>
         )}
       </div>

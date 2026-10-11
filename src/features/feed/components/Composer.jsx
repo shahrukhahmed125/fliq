@@ -1,8 +1,9 @@
-import { Hash, Image, X, Loader2, Video, Check, Smile, Globe } from 'lucide-react'
+import { Hash, Image, X, Loader2, Video, Check, Smile, Globe, Users, ChevronDown } from 'lucide-react'
 import { useAuth } from '@/context/useAuth'
 import { getInitials } from '@/lib/helpers'
 import { useState, useRef } from 'react'
 import { postService } from '@/services/postService'
+import VideoPlayer from '@/components/ui/VideoPlayer'
 
 function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSuccess = null, replyTo = null }) {
   const [text, setText] = useState('')
@@ -205,7 +206,7 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
             <div className="composer-videos">
               {videos.map((video, index) => (
                 <div key={index} className="composer-video-preview">
-                  <video src={URL.createObjectURL(video)} controls />
+                  <VideoPlayer src={URL.createObjectURL(video)} controls aspectRatio="16 / 9" />
                   <button
                     type="button"
                     className="remove-video"
@@ -324,6 +325,7 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
                 onClick={handleImageClick}
                 disabled={isLoading || showSuccess}
                 title="Attach photo"
+                className="composer-tool-btn"
               >
                 <Image size={17} />
               </button>
@@ -333,6 +335,7 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
                 onClick={handleVideoClick}
                 disabled={isLoading || showSuccess}
                 title="Attach video"
+                className="composer-tool-btn"
               >
                 <Video size={17} />
               </button>
@@ -342,7 +345,7 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
                 onClick={handleTopicClick}
                 disabled={isLoading || showSuccess}
                 title="Add hashtag"
-                className={showTopicInput ? 'tool-active' : ''}
+                className={`composer-tool-btn ${showTopicInput ? 'tool-active' : ''}`}
               >
                 <Hash size={17} />
               </button>
@@ -352,23 +355,30 @@ function Composer({ compact = false, onPostSuccess, postUuid = null, onCommentSu
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 disabled={isLoading || showSuccess}
                 title="Quick emojis"
-                className={showEmojiPicker ? 'tool-active' : ''}
+                className={`composer-tool-btn ${showEmojiPicker ? 'tool-active' : ''}`}
               >
                 <Smile size={17} />
               </button>
               {!isCommentMode && (
-                <button
-                  type="button"
-                  className="audience-pill-btn"
-                  onClick={() => setAudience(audience === 'Everyone' ? 'Followers' : 'Everyone')}
-                  title="Audience visibility"
-                >
-                  <Globe size={12} />
-                  <span>{audience}</span>
-                </button>
+                <>
+                  <span className="composer-tools-divider" aria-hidden="true" />
+                  <button
+                    type="button"
+                    className={`audience-pill-btn ${audience === 'Followers' ? 'is-followers' : 'is-everyone'}`}
+                    onClick={() => setAudience(audience === 'Everyone' ? 'Followers' : 'Everyone')}
+                    title={`Audience visibility: ${audience} (Click to toggle)`}
+                    aria-label={`Audience visibility set to ${audience}. Click to toggle.`}
+                  >
+                    <span className="audience-pill-icon">
+                      {audience === 'Followers' ? <Users size={13} /> : <Globe size={13} />}
+                    </span>
+                    <span className="audience-pill-label">{audience}</span>
+                    <ChevronDown size={12} className="audience-pill-chevron" />
+                  </button>
+                </>
               )}
               {text.length > 0 && (
-                <span style={{ fontSize: '11px', color: charRemaining < 20 ? 'var(--fliq-danger)' : 'var(--fliq-muted-light)', fontVariantNumeric: 'tabular-nums', marginLeft: '6px' }}>
+                <span className="composer-char-counter" style={{ color: charRemaining < 20 ? 'var(--fliq-danger)' : 'var(--fliq-muted-light)' }}>
                   {charRemaining}
                 </span>
               )}

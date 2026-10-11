@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react'
+import VideoPlayer from './VideoPlayer'
 
 function MediaLightbox({ isOpen, mediaList = [], currentIndex = 0, onClose, onNavigate }) {
   useEffect(() => {
@@ -78,11 +79,11 @@ function MediaLightbox({ isOpen, mediaList = [], currentIndex = 0, onClose, onNa
 
           <div className="fliq-lightbox-media-wrap">
             {isVideo ? (
-              <video
+              <VideoPlayer
                 src={currentMedia}
-                controls
                 autoPlay
-                className="fliq-lightbox-media"
+                controls
+                className="fliq-lightbox-video"
               />
             ) : (
               <img

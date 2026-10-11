@@ -1,10 +1,12 @@
-import { ArrowLeft, CalendarDays, Link as LinkIcon, MapPin, ShieldCheck, Loader2, Edit3, X } from 'lucide-react'
+import { ArrowLeft, CalendarDays, Link as LinkIcon, MapPin, ShieldCheck, Loader2, Edit3 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { profileHighlights } from '@/data/fliqData'
 import PostCard from '@/features/feed/components/PostCard'
+import Tabs from '@/components/ui/Tabs'
+import Modal from '@/components/ui/Modal'
 import { ROUTES } from '@/lib/constants'
 import { useAuth } from '@/context/useAuth'
-import { getInitials, getRandomCover } from '@/lib/helpers'
+import { getInitials, getRandomCover, getMediaUrl } from '@/lib/helpers'
 import { useEffect, useState, useCallback } from 'react'
 import { postService } from '@/services/postService'
 import { storageService } from '@/services/storageService'
@@ -161,19 +163,13 @@ function ProfilePage() {
       </section>
 
       {/* Profile Section Tabs */}
-      <div className="profile-tabs-bar" role="tablist" aria-label="Profile navigation tabs">
-        {tabs.map((tab, index) => (
-          <button
-            className={activeTab === index ? 'active' : ''}
-            type="button"
-            role="tab"
-            key={tab}
-            onClick={() => setActiveTab(index)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        tabs={tabs}
+        activeTab={activeTab}
+        onChange={setActiveTab}
+        className="profile-tabs-bar"
+        ariaLabel="Profile navigation tabs"
+      />
 
       {/* Posts Stream */}
       <div className="post-list">
@@ -193,65 +189,51 @@ function ProfilePage() {
       </div>
 
       {/* Edit Profile Modal */}
-      {showEditModal && (
-        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
-          <div className="modal-backdrop" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-container">
-              <div className="modal-header">
-                <h2>Edit Profile</h2>
-                <button
-                  type="button"
-                  onClick={() => setShowEditModal(false)}
-                  className="modal-close-button"
-                  aria-label="Close"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              <form onSubmit={handleSaveProfile} style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--fliq-muted)' }}>Name</label>
-                  <input
-                    type="text"
-                    value={editFormData.name}
-                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                    required
-                    style={{ padding: '10px 14px', borderRadius: 'var(--fliq-radius-md)', border: '1px solid var(--fliq-border)', background: 'var(--fliq-surface)', color: 'var(--fliq-ink)', fontSize: '14px', outline: 'none' }}
-                  />
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--fliq-muted)' }}>Bio</label>
-                  <textarea
-                    rows={3}
-                    value={editFormData.bio}
-                    onChange={(e) => setEditFormData({ ...editFormData, bio: e.target.value })}
-                    style={{ padding: '10px 14px', borderRadius: 'var(--fliq-radius-md)', border: '1px solid var(--fliq-border)', background: 'var(--fliq-surface)', color: 'var(--fliq-ink)', fontSize: '14px', outline: 'none', resize: 'none' }}
-                  />
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
-                  <button
-                    type="button"
-                    onClick={() => setShowEditModal(false)}
-                    style={{ padding: '8px 16px', borderRadius: 'var(--fliq-radius-md)', fontSize: '13px', fontWeight: '600', color: 'var(--fliq-muted)' }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="primary-action"
-                    style={{ padding: '8px 20px', fontSize: '13px' }}
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </form>
-            </div>
+      <Modal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        title="Edit Profile"
+        maxWidth={520}
+      >
+        <form onSubmit={handleSaveProfile} className="edit-profile-form">
+          <div className="form-field-group">
+            <label className="form-field-label">Name</label>
+            <input
+              type="text"
+              value={editFormData.name}
+              onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+              required
+              className="fliq-text-input"
+            />
           </div>
-        </div>
-      )}
+
+          <div className="form-field-group">
+            <label className="form-field-label">Bio</label>
+            <textarea
+              rows={3}
+              value={editFormData.bio}
+              onChange={(e) => setEditFormData({ ...editFormData, bio: e.target.value })}
+              className="fliq-textarea"
+            />
+          </div>
+
+          <div className="modal-actions-bar">
+            <button
+              type="button"
+              className="secondary-btn"
+              onClick={() => setShowEditModal(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="primary-action"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </Modal>
     </main>
   )
 }

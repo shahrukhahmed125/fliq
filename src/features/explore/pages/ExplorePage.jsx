@@ -16,6 +16,7 @@ import {
   TrendingUp,
 } from 'lucide-react'
 import { getInitials } from '@/lib/helpers'
+import Tabs from '@/components/ui/Tabs'
 
 function ExplorePage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -346,19 +347,13 @@ function ExplorePage() {
       )}
 
       {/* Navigation Filter Tabs */}
-      <div className="explore-tabs" role="tablist" aria-label="Explore tabs">
-        {tabs.map((tab, index) => (
-          <button
-            className={activeTab === index ? 'active' : ''}
-            type="button"
-            role="tab"
-            key={tab}
-            onClick={() => setActiveTab(index)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        tabs={tabs}
+        activeTab={activeTab}
+        onChange={setActiveTab}
+        className="explore-tabs"
+        ariaLabel="Explore tabs"
+      />
 
       <div className="explore-content">
         {/* Tab 0: Trending */}

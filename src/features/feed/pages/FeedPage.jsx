@@ -2,6 +2,7 @@ import { Loader2, ArrowUp, RefreshCw, Feather } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import Composer from '@/features/feed/components/Composer'
 import PostCard from '@/features/feed/components/PostCard'
+import Tabs from '@/components/ui/Tabs'
 import { postService } from '@/services/postService'
 
 function FeedPage() {
@@ -99,19 +100,13 @@ function FeedPage() {
       </header>
 
       {/* Editorial Navigation Tabs */}
-      <div className="feed-tabs" role="tablist" aria-label="Feed filter tabs">
-        {tabs.map((tab, index) => (
-          <button
-            className={activeTab === index ? 'active' : ''}
-            type="button"
-            role="tab"
-            key={tab}
-            onClick={() => setActiveTab(index)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        tabs={tabs}
+        activeTab={activeTab}
+        onChange={setActiveTab}
+        className="feed-tabs"
+        ariaLabel="Feed filter tabs"
+      />
 
       {/* Live Community Pulse Indicator */}
       <div className="feed-pulse-ticker">

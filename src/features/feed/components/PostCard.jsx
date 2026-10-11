@@ -7,15 +7,7 @@ import CommentModal from './CommentModal'
 import PostComposerModal from './PostComposerModal'
 import { useAuth } from '@/context/useAuth'
 import MediaLightbox from '@/components/ui/MediaLightbox'
-
-function LoadingPlaceholder() {
-  return (
-    <div className="media-loading-placeholder" style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--fliq-muted)' }}>
-      <Loader2 className="spinner" size={20} />
-      <span style={{ fontSize: '13px' }}>Processing media...</span>
-    </div>
-  )
-}
+import MediaCollage from '@/components/ui/MediaCollage'
 
 function PostCard({ post, isComment = false, onDelete = null, _postUuid = null, onReply = null, _repostOf = null }) {
   const navigate = useNavigate()
@@ -42,15 +34,6 @@ function PostCard({ post, isComment = false, onDelete = null, _postUuid = null, 
   const showToast = (msg) => {
     setToastMessage(msg)
     setTimeout(() => setToastMessage(''), 2200)
-  }
-
-  const mediaCount = post?.media?.length || 0
-  const getMediaClass = () => {
-    if (mediaCount === 1) return 'single'
-    if (mediaCount === 2) return 'two'
-    if (mediaCount === 3) return 'three'
-    if (mediaCount === 4) return 'four'
-    return ''
   }
 
   const handleLike = async (e) => {
@@ -248,15 +231,11 @@ function PostCard({ post, isComment = false, onDelete = null, _postUuid = null, 
               <p className="repost-content-text">{post.reposted_post.content}</p>
             )}
             {post.reposted_post?.media?.length > 0 && (
-              <div className={`post-media ${getMediaClass()}`}>
-                {post.reposted_post.media.map((m) => {
-                  if (m.status !== 'completed') return <LoadingPlaceholder key={m.id} />
-                  return m.file_type === 'image' ? (
-                    <img key={m.id} src={getMediaUrl(m.file_path)} alt="Media" loading="lazy" />
-                  ) : (
-                    <video key={m.id} controls src={getMediaUrl(m.file_path)} />
-                  )
-                })}
+              <div className="repost-media-wrap">
+                <MediaCollage
+                  media={post.reposted_post.media}
+                  enableLightbox={true}
+                />
               </div>
             )}
           </div>
@@ -264,32 +243,13 @@ function PostCard({ post, isComment = false, onDelete = null, _postUuid = null, 
 
         {/* Media Attachments */}
         {post?.media?.length > 0 && (
-          <div className={`post-media ${getMediaClass()}`} onClick={(e) => e.stopPropagation()}>
-            {post.media.map((m, idx) => {
-              if (m.status !== 'completed') {
-                return <LoadingPlaceholder key={m.id} />
-              }
-              return m.file_type === 'image' ? (
-                <img
-                  key={m.id}
-                  src={getMediaUrl(m.file_path)}
-                  alt="Post visual"
-                  loading="lazy"
-                  style={{ cursor: 'zoom-in' }}
-                  onClick={() => {
-                    setLightboxIndex(idx)
-                    setLightboxOpen(true)
-                  }}
-                />
-              ) : (
-                <video
-                  key={m.id}
-                  src={getMediaUrl(m.file_path)}
-                  controls
-                />
-              )
-            })}
-          </div>
+          <MediaCollage
+            media={post.media}
+            onMediaClick={(idx) => {
+              setLightboxIndex(idx)
+              setLightboxOpen(true)
+            }}
+          />
         )}
 
         {/* Action Controls */}

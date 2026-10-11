@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import SettingsTopbar from '@/features/settings/components/SettingsTopbar'
+import Tabs from '@/components/ui/Tabs'
 import { ROUTES } from '@/lib/constants'
 import { useAuth } from '@/context/useAuth'
 
@@ -56,18 +57,13 @@ function AccountSettingsPage() {
       />
 
       {/* Tabs */}
-      <div className="settings-nav-tabs" role="tablist">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            className={activeTab === tab ? 'active' : ''}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        tabs={tabs}
+        activeTab={activeTab}
+        onChange={setActiveTab}
+        className="settings-nav-tabs"
+        ariaLabel="Settings category tabs"
+      />
 
       <div className="settings-section-list">
         {activeTab === 'Account' && (

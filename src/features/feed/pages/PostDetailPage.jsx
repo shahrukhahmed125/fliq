@@ -5,15 +5,7 @@ import { postService } from '@/services/postService'
 import { getMediaUrl, formatDate, getInitials } from '@/lib/helpers'
 import PostCard from '../components/PostCard'
 import Composer from '../components/Composer'
-
-function LoadingPlaceholder() {
-  return (
-    <div className="media-loading-placeholder" style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--fliq-muted)' }}>
-      <Loader2 className="spinner" size={20} />
-      <span>Loading visual...</span>
-    </div>
-  )
-}
+import MediaCollage from '@/components/ui/MediaCollage'
 
 function PostDetailPage() {
   const { id } = useParams()
@@ -131,14 +123,7 @@ function PostDetailPage() {
     setCommentsCount((prev) => Math.max(0, prev - 1))
   }
 
-  const mediaCount = post?.media?.length || 0
-  const getMediaClass = () => {
-    if (mediaCount === 1) return 'single'
-    if (mediaCount === 2) return 'two'
-    if (mediaCount === 3) return 'three'
-    if (mediaCount === 4) return 'four'
-    return ''
-  }
+
 
   if (isLoading) {
     return (
@@ -215,16 +200,7 @@ function PostDetailPage() {
           </p>
 
           {post?.media?.length > 0 && (
-            <div className={`post-media ${getMediaClass()}`}>
-              {post.media.map((m) => {
-                if (m.status !== 'completed') return <LoadingPlaceholder key={m.id} />
-                return m.file_type === 'image' ? (
-                  <img key={m.id} src={getMediaUrl(m.file_path)} alt="" />
-                ) : (
-                  <video key={m.id} src={getMediaUrl(m.file_path)} controls />
-                )
-              })}
-            </div>
+            <MediaCollage media={post.media} enableLightbox={true} />
           )}
 
           {/* Detailed Interaction Row */}

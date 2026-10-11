@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Bell, Heart, MessageSquare, Repeat2, UserPlus, CheckCheck } from 'lucide-react'
 import { getInitials } from '@/lib/helpers'
+import Tabs from '@/components/ui/Tabs'
 
 function NotificationsPage() {
   const [filter, setFilter] = useState('all')
@@ -139,19 +140,13 @@ function NotificationsPage() {
       </header>
 
       {/* Filter Tabs */}
-      <div className="notifications-filters" role="tablist">
-        {filters.map((f) => (
-          <button
-            key={f}
-            className={filter === f.toLowerCase() ? 'active' : ''}
-            type="button"
-            role="tab"
-            onClick={() => setFilter(f.toLowerCase())}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        tabs={filters}
+        activeTab={filters.findIndex((f) => f.toLowerCase() === filter.toLowerCase())}
+        onChange={(idx) => setFilter(filters[idx].toLowerCase())}
+        className="notifications-filters"
+        ariaLabel="Notification filter tabs"
+      />
 
       {/* Notifications Stream */}
       <div className="notifications-list">
