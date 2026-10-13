@@ -1,6 +1,6 @@
 function BackgroundPattern() {
   return (
-    <div className="background-pattern">
+    <div className="background-pattern" aria-hidden="true">
       <div className="pattern-circle circle-1"></div>
       <div className="pattern-circle circle-2"></div>
       <div className="pattern-circle circle-3"></div>
